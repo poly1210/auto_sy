@@ -1,0 +1,23 @@
+admin-api/mes/md/unitmeasure:
+  data:
+    changeRate:
+    enableFlag: Y
+    measureCode: '694345408'
+    measureId:
+    measureName: 接口自动化测试
+    primaryFlag: Y
+    primaryId:
+    remark:
+  method: PUT
+  name: 主数据--计量单位--新增
+  url: admin-api/mes/md/unitmeasure
+admin-api/mes/md/unitmeasure/delete:
+  data:
+  method: DELETE
+  name: 主数据--计量单位--删除
+  url: admin-api/mes/md/unitmeasure/12
+admin-api/mes/md/unitmeasure/list:
+  data:
+  method: GET
+  name: 主数据--计量单位--列表
+  url: admin-api/mes/md/unitmeasure/list?pageNum=1&pageSize=10&measureCode=694345408

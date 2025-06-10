@@ -1,0 +1,5 @@
+# --------------流程信息-----------
+admin-api/oa/myTask/commitTask:
+  payload: {}
+  method: POST
+  url: admin-api/oa/myTask/commitTask

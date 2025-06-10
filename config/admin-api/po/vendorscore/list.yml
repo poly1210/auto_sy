@@ -1,0 +1,5 @@
+admin-api/po/vendorscore/list:
+  method: GET
+  name: 采购管理--供应商评分--供应商评分--列表
+  url: admin-api/po/vendorscore/list?pageNum=1&pageSize=10
+  data:

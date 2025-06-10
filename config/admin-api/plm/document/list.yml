@@ -1,0 +1,8 @@
+admin-api/plm/document/list:
+  method: data
+  name: 企业知识库-文档工作区-列表
+  url: admin-api/plm/document/list
+  data:
+    pageNum: 1
+    pageSize: 10
+    itemTypeIds: 13,15,18,20

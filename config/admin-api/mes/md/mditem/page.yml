@@ -1,0 +1,7 @@
+admin-api/mes/md/mditem/page:
+  data:
+  method: data
+  name: 物料产品管理--物料产品管理--列表
+  url: admin-api/mes/md/mditem/page?itemCode=IF20250329073&pageNum=1&pageSize=10
+admin_api/mes/md/mditem/page:
+  url: admin-api/mes/md/mditem/page?itemCode=IF20250317699&pageNum=1&pageSize=10

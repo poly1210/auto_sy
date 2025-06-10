@@ -1,0 +1,5 @@
+admin-api/po/purchase/approve/detail:
+  method: GET
+  name: 采购管理--采购申请--采购申请明细--列表
+  url: admin-api/po/purchase/approve/detail?pageNum=1&pageSize=10&beginPurchaseData=2024-12-01&endPurchaseData=2025-03-21
+  data:

@@ -1,0 +1,14 @@
+admin-api/mes/md/mditem:
+  data: {"clientName": "厦门客户", "itemTypeId": 205, "itemCode": "IF20250329073", "itemName": "物料/产品名称01",
+    "unitOfMeasure": "G", "inventoryUnit": "G", "inventoryCoefficient": 1, "supplyUnit": "G",
+    "supplyCoefficient": 1, "procureUnit": "G", "procureCoefficient": 1, "saleUnit": "G",
+    "saleCoefficient": 1, "isEnable": true, "isSafeStock": false, "virFlag": false,
+    "minStock": 0, "maxStock": 0, "safeStock": 0, "warehouseId": null, "locationId": null,
+    "areaId": null, "batchManagement": false, "isSales": true, "isPurchase": true,
+    "isHomeMade": false, "isHomeMadeLine": false, "isVirtual": false, "isReverseFlushPicking": false,
+    "isExemptInspection": "Y", "purchaseTemplateId": null, "productionTemplateId": null,
+    "salesTemplateId": null, "clientCode": "C00520", "clientId": 1, "bomList": [],
+    "sopList": []}
+  method: post
+  name: 物料产品管理--物料产品管理--新增
+  url: admin-api/mes/md/mditem

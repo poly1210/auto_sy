@@ -1,0 +1,7 @@
+admin-api/mes/md/itemtype/list:
+  data:
+  method: Get
+  name: 物料产品管理--物料产品分类--列表
+  url: admin-api/mes/md/itemtype/list?itemTypeName=aaa678
+admin_api/mes/md/itemtype/list:
+  url: admin-api/mes/md/itemtype/list?itemTypeName=aaa873

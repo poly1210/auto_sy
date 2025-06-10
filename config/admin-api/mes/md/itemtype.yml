@@ -1,0 +1,6 @@
+admin-api/mes/md/itemtype:
+  data: {"parentTypeId": 212, "itemTypeName": "aaa678", "orderNum": 0, "enableFlag": "Y",
+    "isExemptInspection": "Y"}
+  method: POST
+  name: 物料产品管理--物料产品分类--新增
+  url: admin-api/mes/md/itemtype

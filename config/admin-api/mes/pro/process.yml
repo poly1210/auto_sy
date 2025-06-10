@@ -1,0 +1,30 @@
+# --------------生产管理--基础信息-工序设置--列表-----------
+admin-api/mes/pro/process/page:
+  data:
+  method: GET
+  url: admin-api/mes/pro/process/page?pageNum=1&pageSize=10
+
+# --------------生产管理--基础信息-工序设置--新增-----------
+admin-api/mes/pro/process/add:
+  data: {"processId": null, "processCode": "PROCESS1442", "processName": "接口自动化工序",
+    "proportion": "3", "defects": [{"code": "DF001", "name": "外观缺陷"}], "deptId": 103,
+    "precautions": null, "deptAncestors": [100, 101, 103], "workInstructions": {},
+    "inspectionStandards": {}, "isInspected": "1", "templateId": null, "submits": [
+       {"aliasId": 0, "id": 0, "label": "所有人", "type": "ALL"}], "deptName": "工程部"}
+  method: POST
+  url: admin-api/mes/pro/process/add
+
+
+# --------------生产管理--基础信息-工序设置--删除----------
+admin-api/mes/pro/process/delete:
+  data:
+  method: DELETE
+  url: admin-api/mes/pro/process/2
+
+
+# --------------生产管理--基础信息-工序设置--详情----------
+admin-api/mes/pro/process/detail:
+  data:
+  method: GET
+  url: admin-api/mes/pro/process/2
+

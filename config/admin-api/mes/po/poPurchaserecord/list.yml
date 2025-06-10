@@ -1,0 +1,5 @@
+admin-api/mes/po/poPurchaserecord/list:
+  method: GET
+  name: 采购管理--采购订单--采购减单记录--采购减单记录列表
+  url: admin-api/mes/po/poPurchaserecord/list?pageNum=1&pageSize=10
+  data:

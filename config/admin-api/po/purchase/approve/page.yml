@@ -1,0 +1,6 @@
+admin-api/po/purchase/approve/page:
+  method: GET
+  name: 采购管理--采购申请--采购申请单--列表
+  url: admin-api/po/purchase/approve/page?pageNum=1&pageSize=10
+  data:
+

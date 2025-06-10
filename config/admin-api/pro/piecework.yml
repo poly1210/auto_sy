@@ -1,0 +1,5 @@
+# --------------生产管理--生产管理--计件核算单--列表-----------
+admin-api/pro/piecework/list:
+  data:
+  method: GET
+  url: admin-api/pro/piecework/list?pageNum=1&pageSize=10

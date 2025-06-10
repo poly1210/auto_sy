@@ -1,0 +1,14 @@
+
+pre-url : http://192.168.3.128:1170/
+
+#这里的admin-api/login被改成admin-api/config.yml
+admin-api/config.yml:
+  method: json
+  name: 登录
+  url: admin-api/login
+  data: {
+    username: "admin",
+    password: "abc123456",
+  }
+  headers:
+    content-type: application/json;charset=UTF-8

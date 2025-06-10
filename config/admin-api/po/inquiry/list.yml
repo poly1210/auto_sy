@@ -1,0 +1,5 @@
+admin-api/po/inquiry/list:
+  method: GET
+  name: 采购管理--询价单--列表
+  url: admin-api/po/inquiry/list?pageNum=1&pageSize=10
+  data:

@@ -1,0 +1,7 @@
+admin-api/plm/printManagement/list:
+  method: data
+  name: 企业知识库-文档工作区-打印管理列表
+  url: admin-api/plm/printManagement/list
+  data:
+    pageNum: 1
+    pageSize: 10

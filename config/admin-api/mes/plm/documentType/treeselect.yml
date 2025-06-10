@@ -1,0 +1,6 @@
+admin-api/mes/plm/documentType/treeselect:
+  method: data
+  name: 企业知识库-文档工作区-目录列表
+  url: admin-api/mes/plm/documentType/treeselect
+  data:
+    enableFlag: Y

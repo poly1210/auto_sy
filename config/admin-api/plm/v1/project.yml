@@ -1,0 +1,49 @@
+# --------------项目管理--项目模板--列表-----------
+admin-api/plm/v1/project/list:
+  data:
+  method: GET
+  url: admin-api/plm/v1/project/list?type=1
+
+# --------------项目管理--项目模板--列表-----------
+admin-api/plm/v1/projectTemplate/list:
+  data:
+  method: GET
+  url: admin-api/plm/v1/projectTemplate/list?type=1
+
+# --------------项目管理--项目模板--列表-----------
+admin-api/plm/v1/templateTask/list:
+  data:
+  method: GET
+  url: admin-api/plm/v1/templateTask/list?projectTemplateId=45
+
+# --------------项目管理--项目模板--新增-----------
+admin-api/plm/v1/projectTemplate:
+  data: {name: "自动化测试", sort: "10", type: 1}
+  method: POST
+  url: admin-api/plm/v1/projectTemplate
+
+# --------------项目管理--项目模板--删除-----------
+admin-api/plm/v1/projectTemplate/delete:
+  data:
+  method: DELETE
+  url: admin-api/plm/v1/projectTemplate/5
+
+
+# --------------项目管理--项目跟踪--新增-----------
+admin-api/plm/v1/project:
+  data: {"name": "接口自动化测试", "projectNumber": "PLM202503290049", "responsibilityPeopleId": 1,
+    "startTime": "2025-03-25", "endTime": "2030-03-31", "planDuration": 1833, "clientId": 728,
+    "studyCost": "5", "content": "项目内容测试", "responsibilityPeopleName": "若依", "url": "99",
+    "parentId": 99, "clientName": "长发机械", "type": 2, "roleUserIdListMap": [{"roleId": 2,
+          "memberIds": [2], "roleName": "采购员", "userList": [{"searchValue": null,
+                "createBy": "admin", "createTime": "2024-08-16 09:33:02", "updateBy": "admin",
+                "updateTime": "2025-03-11 14:03:47", "remark": "采购员", "params": {},
+                "userId": 2, "deptId": 110, "userName": "cg", "nickName": "采购", "email": "17306695696@gmail.com",
+                "phonenumber": "17306695691", "sex": "0", "avatar": "", "salt": null,
+                "status": "0", "delFlag": "0", "loginIp": "192.168.3.100", "loginDate": "2025-03-11T14:03:47.000+08:00",
+                "dept": null, "roles": null, "roleIds": null, "postIds": null, "ids": null,
+                "roleId": null, "admin": false}]}]}
+  method: POST
+  url: admin-api/plm/v1/project
+
+

@@ -1,0 +1,12 @@
+# --------------销售管理-客户反馈--列表-----------
+admin-api/mes/sm/sales/feedback/list:
+  data:
+  method: GET
+  url: admin-api/mes/sm/sales/feedback/list?pageNum=1&pageSize=10
+
+
+# --------------销售管理-客户反馈--确认-----------
+admin-api/mes/sm/sales/feedback/confirm:
+  data: {"feedbackId":130,"salesCode":"SAL2025086","salesData":"2025-03-11T00:00:00.000+08:00","workorderCode":null,"workshopName":"","userName":"admin","feedbackType":"销售","feedbackContent":"可以","progressStatus":"0","confirmationContent":"接口自动化测试23"}
+  method: PUT
+  url: admin-api/mes/sm/sales/feedback/confirm

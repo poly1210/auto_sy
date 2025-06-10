@@ -1,0 +1,30 @@
+# --------------销售管理-销售订单明细--列表-----------
+admin-api/mes/sm/sales/detail:
+  data:
+  method: GET
+  name: 销售管理-销售订单明细--列表
+  url: 
+    admin-api/mes/sm/sales/detail?pageNum=1&pageSize=10&beginSalesData=2024-12-01&endSalesData=2025-03-20
+
+# --------------销售管理-销售订单明细--批量审批-----------
+admin-api/oa/flowBatch/sm_sales/pass:
+  url: admin-api/oa/flowBatch/sm_sales/pass/7
+  data:
+  method: GET
+  name: 销售管理-销售订单明细--批量审批
+
+
+# --------------销售管理-销售减单记录--列表-----------
+admin-api/mes/sm/record/list:
+  data:
+  method: GET
+  name: 销售管理-销售减单记录--列表
+  url: admin-api/mes/sm/record/list?pageNum=1&pageSize=10
+
+
+# --------------销售管理-销售减单记录--撤销-----------
+admin-api/mes/sm/record/cancel:
+  data: '[29]'
+  method: PUT
+  name: 销售管理-销售减单记录--撤销-
+  url: admin-api/mes/sm/record/cancel

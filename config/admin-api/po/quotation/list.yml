@@ -1,0 +1,5 @@
+admin-api/po/quotation/list:
+  method: GET
+  name: 采购管理--报价单--列表
+  url: admin-api/po/quotation/list?pageNum=1&pageSize=10
+  data:

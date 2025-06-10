@@ -1,0 +1,7 @@
+admin-api/plm/transceiverManagement/list:
+  method: data
+  name: 企业知识库-文档工作区-收发管理列表
+  url: admin-api/plm/transceiverManagement/list
+  data:
+    pageNum: 1
+    pageSize: 10

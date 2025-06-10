@@ -1,0 +1,51 @@
+# --------------销售管理-销售出库--销售出库列表-----------
+admin-api/mes/wm/productsalse/list:
+  data:
+  method: GET
+  url: admin-api/mes/wm/productsalse/list?pageNum=1&pageSize=10
+
+
+# --------------销售管理-销售出库--销售出库列表--新增-----------
+admin-api/mes/wm/productsalse/addNew:
+  url: admin-api/mes/wm/productsalse/addNew
+  method: POST
+  data: {"salesId": 970, "salseId": null, "salseCode": "PS42567837420", "salseName": null,
+    "oqcCode": null, "soCode": null, "salesName": null, "clientName": "新疆客户", "clientCode": "C00360",
+    "clientId": 670, "salseDate": "2025-03-22 15:30:08", "remark": null, "list": [
+       {"salesLineId": 1033, "salesId": 970, "itemId": 3698, "itemCode": "IF20250115001",
+          "itemName": "黑熊", "itemNum": 2, "itemSpec": "hx", "specification": "hx",
+          "packageName": null, "unitOfMeasure": "G", "matnr": null, "receivedGoods": 0,
+          "unreceivedGoods": 2, "saleUnit": "G", "itemNumber": null, "saleCoefficient": 1,
+          "goodsTime": null, "totalMoney": 2, "taxMoney": 1, "unitMoney": 1, "taxPrice": 1,
+          "taxRate": 0, "saleQuantityOnhand": 95, "quantityOnhand": 101, "inventoryCoefficient": 1,
+          "supplyCoefficient": 1, "supplyQuantityOnhand": 101, "batchManagement": true,
+          "warehouseId": 349, "warehouseCode": "WH236", "warehouseName": "测试", "locationId": 317,
+          "locationCode": "L092", "locationName": "五金仓库", "areaId": 323, "areaCode": "A0072",
+          "areaName": "五金", "warehouseInfo": [349, 317, 323], "warehouseNameZh": "测试/五金仓库/五金",
+          "quantitySalse": 1, "index": 1, "batchCode": "BAT202501151167", "materialStockId": 1872,
+          "inventoryUnit": "G"}], "warehouseInfo": [], "userName": null, "currency": null,
+    "taxRate": null, "userId": null}
+
+
+
+
+# --------------销售管理-销售出库--销售出库列表--删除-----------
+admin-api/mes/wm/productsalse/delete:
+  data:
+  method: DELETE
+  url: admin-api/mes/wm/productsalse/367
+
+
+# --------------销售管理-销售出库--销售出库明细----------
+admin-api/mes/wm/productsalse/detail:
+  data:
+  method: GET
+  url: 
+    admin-api/mes/wm/productsalse/detail?pageNum=1&pageSize=10&beginSalseDate=2024-12-01&endSalseDate=2025-03-22
+
+
+# --------------销售管理-销售出库--销售出库列表--详情-----------
+admin-api/mes/wm/productsalse/detail2:
+  data:
+  method: GET
+  url: admin-api/mes/wm/productsalse/310

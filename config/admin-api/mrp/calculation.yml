@@ -1,0 +1,5 @@
+# --------------生产管理--物料需求计划--MRP运算列表--列表-----------
+admin-api/mrp/calculation/list:
+  data:
+  method: GET
+  url: admin-api/mrp/calculation/list
