@@ -1,113 +1,118 @@
 from baseApi.base_api import AllApi
-import common.file_path as FilePath
-from common.read_yaml import ReadYaml
-from common.write_yaml import update_yaml_pyyaml
 
-
-class SaleOrder:
+#工序上线
+class ProcessOnline():
     business_id = None  # 类变量存储 businessId
 
     def __init__(self):
         self.api = AllApi()
         self.api.send_login("admin-api/config.yml")
 
-    def auto_sale_code(self):
-        """获取销售订单的自动编号"""
-        relative_url ="admin-api/system/autocode/get/SALES_CODE"
+    def auto_buy_code(self):
+        """获取采购订单的自动编号"""
+        relative_url ="admin-api/system/autocode/get/PURCHASE_CODE"
         purchase_code = self.api.send_get_direct(relative_url)
         return purchase_code
 
-    def saleorder_add(self):
-        """销售管理-销售订单-新增"""
+    def buy_order_add(self):
+        """采购管理-采购订单-新增"""
+        relative_url = "admin-api/mes/po/purchase"
         payload = {
-            "clientCode": "C00524",
-            "clientId": 1021,
-            "clientName": "测试",
+            "purchaseCode": self.auto_buy_code(),
+            "purchaseName": None,
+            "vendorName": "嘿嘿嘿1",
+            "vendorCode": "V00139",
             "currency": "美元",
-            "delivery": None,
-            "salesCode": self.auto_sale_code(),
-            "salesData": "2025-06-06 14:09:47",
-            "salesId": None,
-            "salesName": None,
-            "userId": 1,
-            "userName": "admin",
+            "deliveryDate": None,
+            "isApprove": "order",
+            "isIncludeTax": "Y",
             "list": [
                 {
                     "searchValue": None,
                     "createBy": None,
                     "createTime": None,
+                    "updateBy": None,
+                    "updateTime": None,
                     "remark": None,
                     "areaCode": None,
                     "areaId": None,
                     "areaName": None,
-                    "batchManagement": True,
+                    "batchManagement": False,
                     "batchManagementZh": None,
-                    "clientItemCode": "是是是123低点",
+                    "clientItemCode": "FEFREDFREWR45435",
                     "drawCode": None,
                     "flowInsId": None,
                     "flowKey": None,
                     "index": 1,
                     "inventoryCoefficient": 1,
-                    "inventoryUnit": "G",
+                    "inventoryUnit": "个",
                     "isEnable": True,
                     "isEnableZh": None,
                     "isExemptInspection": None,
-                    "isSafeStock": True,
+                    "isSafeStock": False,
                     "isSafeStockZh": None,
                     "isUse": None,
                     "isUseZh": None,
-                    "itemCode": "JYXM202505280001",
-                    "itemId": 3879,
-                    "itemName": "物料/产品名称70",
-                    "itemNum": 2,
+                    "itemCode": "JYXM202506040001",
+                    "itemId": 3943,
+                    "itemName": "佛挡杀佛是否",
+                    "itemNum": 1,
                     "itemOrProduct": None,
+                    "itemSpec": "csck",
                     "itemTypeCode": "ITEM_TYPE_0149",
                     "itemTypeId": 318,
                     "itemTypeName": "成品",
                     "locationCode": None,
                     "locationId": None,
                     "locationName": None,
-                    "packageName": "包装方式123",
-                    "params": {},  # 空字典
+                    "packageName": "fsdfsdfsdf",
+                    "params": {},
                     "procureCoefficient": 1,
-                    "procureQuantityOnhand": 80,
-                    "procureUnit": "G",
+                    #"procureQuantityOnhand": 5305,
+                    "procureUnit": "个",
                     "productionTemplateId": None,
                     "productionTemplateName": None,
                     "purchaseTemplateId": None,
                     "purchaseTemplateName": None,
-                    "quantityOnhand": 80,
+                    #"quantityOnhand": 5305,
                     "saleCoefficient": 1,
-                    "saleQuantityOnhand": 80,
-                    "saleUnit": "G",
+                    #"saleQuantityOnhand": 5305,
+                    "saleUnit": "个",
                     "salesTemplateId": None,
                     "salesTemplateName": None,
-                    "specification": "规格型号123",
+                    "specification": "csck",
                     "status": "0",
                     "statusZh": None,
                     "supplyCoefficient": 1,
-                    "supplyQuantityOnhand": 80,
-                    "supplyUnit": "G",
-                    "taxMoney": 4,
-                    "taxPrice": 2,
+                    #"supplyQuantityOnhand": 5305,
+                    "supplyUnit": "个",
+                    "taxMoney": 1,
+                    "taxPrice": 1,
                     "taxRate": 0,
-                    "totalMoney": 4,
-                    "unitMoney": 2,
-                    "unitOfMeasure": "G",
-                    "unreceivedGoods": 2,
-                    "updateBy": None,
-                    "updateTime": None,
+                    "totalMoney": 1,
+                    "unitMoney": 1,
+                    "unitOfMeasure": "个",
+                    "unreceivedGoods": 1,
                     "url": None,
                     "version": None,
-                    "warehouseCode": "WH253",
-                    "warehouseId": 369,
-                    "warehouseInfo": [369],  # 数组
-                    "warehouseName": "总仓库",
-                    "warehouseNameZh": "总仓库"
+                    "warehouseCode": "WH243",
+                    "warehouseId": 353,
+                    "warehouseInfo": [353],
+                    "warehouseName": "成品仓库",
+                    "warehouseNameZh": "成品仓库"
                 }
-            ]
+                # 如果有多个 list 元素，继续在这里添加字典即可
+            ],
+            "preAmount": 0,
+            "purchaseData": "2025-06-09 09:26:19",
+            "remark": None,
+            "status": "0",
+            "taxRate": 2,
+            "totalMoney": None,
+            "userId": 1,
+            "userName": "admin",
+            "vendorId": 269
         }
-        relative_url = "admin-api/mes/sm/sales"
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)
 
@@ -122,10 +127,9 @@ class SaleOrder:
 
         return business_id
 
-
-    def saleorder_get(self, business_id):
-        """销售订单 - 查询详情，返回 insid 和 taskid"""
-        relative_url = f"admin-api/mes/sm/sales/{business_id}"
+    def buy_order_get(self, business_id):
+        """采购订单 - 查询详情，返回 insid 和 taskid"""
+        relative_url = f"admin-api/mes/po/purchase/{business_id}"
 
         # 通过 AllApi 的简洁 GET 方法直接发请求
         response = self.api.send_get_direct(relative_url)
@@ -138,9 +142,8 @@ class SaleOrder:
         return data["flowInsId"], data["taskId"]
 
     def commit_task_by_business_id(self, business_id):
-        """封装好payload数据"""
-        insid, taskid = self.saleorder_get(business_id)
-
+        """封装好审批的payload数据"""
+        insid, taskid = self.buy_order_get(business_id)
 
         payload = {
             "taskid": taskid,
@@ -148,25 +151,26 @@ class SaleOrder:
             "businessId": business_id,
             "comment": "",
             "operateType": "0",
-            "billType": "sm_sales"
+            "billType": "purchase"
         }
-        return  payload
+        return payload
 
     def processInstance_cancleFlow(self, business_id, payload):
-        "销售管理-销售订单明细--批量审批"
+        "采购管理-采购订单明细--批量审批"
         relative_url = "admin-api/oa/myTask/commitTask"
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
-        response  = self.api.send_post_direct(relative_url, payload)
+        response = self.api.send_post_direct(relative_url, payload)
         return response["code"]
+
 
 # 使用示例
 if __name__ == "__main__":
     # 创建 SaleOrder 实例
-    sale_order_instance = SaleOrder()
+    buy_order_instance = BuyOrder()
 
-    # 调用 订单新增，查询订单，审核订单 方法
-    business_id = sale_order_instance.saleorder_add()
-    payload = sale_order_instance.commit_task_by_business_id(business_id)
-    response_code = sale_order_instance.processInstance_cancleFlow(business_id, payload)
+    # 调用 采购订单新增，查询订单，审核订单 方法
+    business_id = buy_order_instance.buy_order_add()
+    payload = buy_order_instance.commit_task_by_business_id(business_id)
+    response_code = buy_order_instance.processInstance_cancleFlow(business_id, payload)
     print(f"审批返回状态码：{response_code}")

@@ -1,6 +1,6 @@
 from baseApi.base_api import AllApi
 
-
+#采购入库
 class BuyInventory:
     business_id = None  # 类变量存储 businessId
 

@@ -1,23 +1,22 @@
 from baseApi.base_api import AllApi
 
-
-#销售出库
-class SaleOut:
+#产品送检单
+class ProductionInspection:
     business_id = None  # 类变量存储 businessId
 
     def __init__(self):
         self.api = AllApi()
         self.api.send_login("admin-api/config.yml")
 
-    def auto_sale_out_code(self):
-        """获取出库订单的自动编号"""
-        relative_url ="admin-api/system/autocode/get/PRODUCTSALSE_CODE"
-        productsalse_code = self.api.send_get_direct(relative_url)
-        return productsalse_code
+    def auto_production_inspection_code(self):
+        """获取产品送检单订单的自动编号"""
+        relative_url ="admin-api/system/autocode/get/PRODUCTINSPECTION_CODE"
+        production_inspection_code = self.api.send_get_direct(relative_url)
+        return production_inspection_code
 
-    def sale_out_add(self):
-        """销售管理-销售订单-出库"""
-        relative_url = "admin-api/mes/wm/productsalse/addNew"
+    def production_inspection_add(self):
+        """生产管理-产品入库-产品送检单"""
+        relative_url = "admin-api/qc/product/inspection"
         # 这里的payload十分复杂，等到后面再继续补上
         # payload = {
         #
@@ -38,9 +37,9 @@ class SaleOut:
         return business_id
 
 
-    def sale_out_get(self, business_id):
-        """销售出库订单 - 查询详情，返回 insid 和 taskid"""
-        relative_url = f"admin-api/mes/wm/productsalse/{business_id}"
+    def production_inspection_get(self, business_id):
+        """生产管理-产品入库-产品送检单- 查询详情，返回 insid 和 taskid"""
+        relative_url = f"admin-api/qc/product/inspection/{business_id}"
 
         # 通过 AllApi 的简洁 GET 方法直接发请求
         response = self.api.send_get_direct(relative_url)
@@ -52,10 +51,10 @@ class SaleOut:
         data = response["data"]
         return data["flowInsId"], data["taskId"]
 
+
     def commit_task_by_business_id(self, business_id):
         """封装好payload数据"""
-        insid, taskid = self.sale_out_get(business_id)
-
+        insid, taskid = self.production_inspection_get(business_id)
 
         payload = {
             "taskid": taskid,
@@ -63,25 +62,28 @@ class SaleOut:
             "businessId": business_id,
             "comment": "",
             "operateType": "0",
-            "billType": "wm_product_salse"
+            "billType": "qc_product_inspection"
         }
-        return  payload
+        return payload
 
-    def processInstance_cancleFlow(self, business_id, payload):
+
+    def processInstance_cancleFlow(self, payload):
         "销售管理-销售订单明细--批量审批"
         relative_url = "admin-api/oa/myTask/commitTask"
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
-        response  = self.api.send_post_direct(relative_url, payload)
+        response = self.api.send_post_direct(relative_url, payload)
         return response["code"]
 
-# 使用示例
-if __name__ == "__main__":
-    # 创建 SaleOut 实例
-    sale_out_instance = SaleOut()
+        # 使用示例
 
-    # 调用 订单新增，查询订单，审核订单 方法
-    business_id = sale_out_instance.sale_out_add()
-    payload = sale_out_instance.commit_task_by_business_id(business_id)
-    response_code = sale_out_instance.processInstance_cancleFlow(business_id, payload)
+
+if __name__ == "__main__":
+    # 创建 类 实例
+    pis = ProductionInspection()
+
+    # 调用 检验单新增，查询检验订单，审核订单 方法
+    business_id = pis.production_inspection_add()
+    payload = pis.commit_task_by_business_id(business_id)
+    response_code = pis.processInstance_cancleFlow(payload)
     print(f"审批返回状态码：{response_code}")

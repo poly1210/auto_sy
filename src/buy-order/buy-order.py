@@ -1,6 +1,6 @@
 from baseApi.base_api import AllApi
 
-
+#采购订单生成
 class BuyOrder:
     business_id = None  # 类变量存储 businessId
 
@@ -11,14 +11,6 @@ class BuyOrder:
     def auto_buy_code(self):
         """获取采购订单的自动编号"""
         relative_url ="admin-api/system/autocode/get/PURCHASE_CODE"
-        # url = self.read_config["pre-url"] + relative_url
-        # auth_token = self.read_token["token"]
-        # headers = {
-        #     "Authorization": f"Bearer {auth_token}",
-        #     "Content-Type": "application/json;charset=UTF-8"
-        # }
-        # purchase_code = requests.get(url=url, headers=headers, data=None, verify=False)
-        # print("自动编号接口返回：", purchase_code)
         purchase_code = self.api.send_get_direct(relative_url)
         return purchase_code
 

@@ -1,6 +1,6 @@
 from baseApi.base_api import AllApi
 
-
+#MRP运算列表
 class MRPcaculation:
     def __init__(self):
         self.api = AllApi()
