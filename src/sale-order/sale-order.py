@@ -14,96 +14,56 @@ class SaleOrder:
         purchase_code = self.api.send_get_direct(relative_url)
         return purchase_code
 
-    def saleorder_add(self):
+    def sale_order_add(self):
         """销售管理-销售订单-新增"""
         payload = {
-            "clientCode": "C00524",
-            "clientId": 1021,
-            "clientName": "测试",
-            "currency": "美元",
-            "delivery": None,
             "salesCode": self.auto_sale_code(),
-            "salesData": "2025-06-06 14:09:47",
-            "salesId": None,
-            "salesName": None,
-            "userId": 1,
-            "userName": "admin",
+             "clientCode": "C00531",
+             "clientId": 1028,
+            "clientName": "wll测试",
+            #选择客户后会带入币种 "currency": "GBP",
             "list": [
                 {
-                    "searchValue": None,
-                    "createBy": None,
-                    "createTime": None,
-                    "remark": None,
-                    "areaCode": None,
-                    "areaId": None,
-                    "areaName": None,
-                    "batchManagement": True,
-                    "batchManagementZh": None,
-                    "clientItemCode": "是是是123低点",
-                    "drawCode": None,
-                    "flowInsId": None,
-                    "flowKey": None,
-                    "index": 1,
+                    # "index": 1,
                     "inventoryCoefficient": 1,
                     "inventoryUnit": "G",
-                    "isEnable": True,
-                    "isEnableZh": None,
-                    "isExemptInspection": None,
-                    "isSafeStock": True,
-                    "isSafeStockZh": None,
-                    "isUse": None,
-                    "isUseZh": None,
-                    "itemCode": "JYXM202505280001",
-                    "itemId": 3879,
-                    "itemName": "物料/产品名称70",
-                    "itemNum": 2,
-                    "itemOrProduct": None,
-                    "itemTypeCode": "ITEM_TYPE_0149",
-                    "itemTypeId": 318,
-                    "itemTypeName": "成品",
-                    "locationCode": None,
-                    "locationId": None,
-                    "locationName": None,
-                    "packageName": "包装方式123",
-                    "params": {},  # 空字典
-                    "procureCoefficient": 1,
-                    "procureQuantityOnhand": 80,
-                    "procureUnit": "G",
-                    "productionTemplateId": None,
-                    "productionTemplateName": None,
-                    "purchaseTemplateId": None,
-                    "purchaseTemplateName": None,
-                    "quantityOnhand": 80,
-                    "saleCoefficient": 1,
-                    "saleQuantityOnhand": 80,
-                    "saleUnit": "G",
-                    "salesTemplateId": None,
-                    "salesTemplateName": None,
-                    "specification": "规格型号123",
-                    "status": "0",
-                    "statusZh": None,
-                    "supplyCoefficient": 1,
-                    "supplyQuantityOnhand": 80,
+                    # "isEnable": True,
+                    # "isEnableZh": None,
+                    "itemCode": "IF20250528001",
+                    "itemId": 3870,
+                    "itemName": "桌子",
+                    "itemNum": 6000,
+                    # "itemTypeCode": "ITEM_TYPE_0149",
+                    # "itemTypeId": 318,
+                    # "itemTypeName": "成品",
+                    # "procureCoefficient": 1,
+                    # "procureQuantityOnhand": 962,
+                    # "procureUnit": "G",
+                    # "quantityOnhand": 962,
+                    # "saleCoefficient": 1,
+                    # "saleQuantityOnhand": 962,
+                    # "saleUnit": "G",
+                    # "specification": "zz",
+                    # "status": "0",
+                    # "statusZh": None,
+                    # "supplyCoefficient": 1,
+                    # "supplyQuantityOnhand": 962,
                     "supplyUnit": "G",
-                    "taxMoney": 4,
+                    "taxMoney": 200,
                     "taxPrice": 2,
                     "taxRate": 0,
-                    "totalMoney": 4,
+                    "totalMoney": 200,
                     "unitMoney": 2,
                     "unitOfMeasure": "G",
-                    "unreceivedGoods": 2,
-                    "updateBy": None,
-                    "updateTime": None,
-                    "url": None,
-                    "version": None,
-                    "warehouseCode": "WH253",
-                    "warehouseId": 369,
-                    "warehouseInfo": [369],  # 数组
-                    "warehouseName": "总仓库",
-                    "warehouseNameZh": "总仓库"
+                    # "unreceivedGoods": 100,
                 }
-            ]
+            ],
+            "salesData": "2025-06-11 10:21:26",
+            # "taxRate": None,
+            "userId": 1,
+            "userName": "admin"
         }
+
         relative_url = "admin-api/mes/sm/sales"
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)
@@ -163,7 +123,7 @@ if __name__ == "__main__":
     sale_order_instance = SaleOrder()
 
     # 调用 订单新增，查询订单，审核订单 方法
-    business_id = sale_order_instance.saleorder_add()
+    business_id = sale_order_instance.sale_order_add()
     payload = sale_order_instance.commit_task_by_business_id(business_id)
     response_code = sale_order_instance.processInstance_cancleFlow(business_id, payload)
     print(f"审批返回状态码：{response_code}")
