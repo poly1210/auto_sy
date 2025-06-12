@@ -18,21 +18,29 @@ class SaleOrder:
         """销售管理-销售订单-新增"""
         payload = {
             "salesCode": self.auto_sale_code(),
-             "clientCode": "C00531",
              "clientId": 1028,
-            "clientName": "wll测试",
+            #"clientCode": "C00531",
+            # "clientName": "wll测试",
             #选择客户后会带入币种 "currency": "GBP",
             "list": [
                 {
-                    # "index": 1,
-                    "inventoryCoefficient": 1,
-                    "inventoryUnit": "G",
-                    # "isEnable": True,
-                    # "isEnableZh": None,
+                    "taxRate": 0,
+                    "totalMoney": 200,
+                    "unitMoney": 2,
                     "itemCode": "IF20250528001",
                     "itemId": 3870,
                     "itemName": "桌子",
                     "itemNum": 6000,
+                    # "index": 1,
+                    # "inventoryCoefficient": 1,
+                    # "inventoryUnit": "G",
+                    # "isEnable": True,
+                    # "isEnableZh": None,
+                    # "supplyUnit": "G",
+                    # "taxMoney": 200,
+                    # "taxPrice": 2,
+
+                    # "unitOfMeasure": "G",
                     # "itemTypeCode": "ITEM_TYPE_0149",
                     # "itemTypeId": 318,
                     # "itemTypeName": "成品",
@@ -48,20 +56,14 @@ class SaleOrder:
                     # "statusZh": None,
                     # "supplyCoefficient": 1,
                     # "supplyQuantityOnhand": 962,
-                    "supplyUnit": "G",
-                    "taxMoney": 200,
-                    "taxPrice": 2,
-                    "taxRate": 0,
-                    "totalMoney": 200,
-                    "unitMoney": 2,
-                    "unitOfMeasure": "G",
                     # "unreceivedGoods": 100,
                 }
             ],
             "salesData": "2025-06-11 10:21:26",
-            # "taxRate": None,
             "userId": 1,
-            "userName": "admin"
+            # "taxRate": None,
+
+            # "userName": "admin"
         }
 
         relative_url = "admin-api/mes/sm/sales"
