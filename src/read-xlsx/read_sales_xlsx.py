@@ -1,3 +1,4 @@
+from decimal import Decimal
 from urllib.parse import quote
 
 import pandas as pd
@@ -70,8 +71,8 @@ class ReadSalesXlsx():
         返回：
             List[dict]，每个 dict 对应一个销售订单的请求体。
         """
-        #创建类实例，方便调用方法
-        rsx = ReadSalesXlsx()
+        # #创建类实例，方便调用方法
+        # rsx = ReadSalesXlsx()
         # 中文表头 → 英文字段映射
         column_map = {
             "单据编号": "salesCode",
@@ -90,7 +91,7 @@ class ReadSalesXlsx():
         df.rename(columns=column_map, inplace=True)
 
         # 删除空行、表头示例、说明行
-        df = df[df["salesCode"].notna() & df["clientId"].notna()]
+        df = df[df["salesCode"].notna() & df["clientName"].notna()]
 
         # 分组：每个订单一组
         grouped = df.groupby("salesCode")
@@ -119,13 +120,18 @@ class ReadSalesXlsx():
                     "itemCode": itemCode,
                     "itemId": itemId,
                     "itemName": itemName,
-                    "itemNum": float(row["itemNum"]),
-                    "unitMoney": float(row["taxPrice"])/(1+row["taxRate"]),
-                    "taxRate": float(row["taxRate"]),
-                    "totalMoney": float(row["itemNum"]) * float(row["unitMoney"])
+                    "itemNum": Decimal(row["itemNum"]),
+                    "unitMoney": Decimal(row["taxPrice"])/(1+row["taxRate"]),
+                    "taxRate": Decimal(row["taxRate"]),
+                    "totalMoney": Decimal(row["itemNum"]) * Decimal(row["unitMoney"])
                 }
                 payload["list"].append(item)
 
             payloads.append(payload)
 
         return payloads
+if __name__ == "__main__":
+    # 创建 类 实例
+    rsx = ReadSalesXlsx()
+    payload = rsx.read_sales_xlsx("D:\桌面\销售订单.xlsx")
+    print(payload)
