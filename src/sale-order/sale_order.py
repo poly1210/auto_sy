@@ -19,8 +19,6 @@ class SaleOrder:
         payload = {
             "salesCode": self.auto_sale_code(),
              "clientId": 1028,
-            #"clientCode": "C00531",
-            # "clientName": "wll测试",
             #选择客户后会带入币种 "currency": "GBP",
             "list": [
                 {
@@ -31,39 +29,10 @@ class SaleOrder:
                     "itemId": 3870,
                     "itemName": "桌子",
                     "itemNum": 6000,
-                    # "index": 1,
-                    # "inventoryCoefficient": 1,
-                    # "inventoryUnit": "G",
-                    # "isEnable": True,
-                    # "isEnableZh": None,
-                    # "supplyUnit": "G",
-                    # "taxMoney": 200,
-                    # "taxPrice": 2,
-
-                    # "unitOfMeasure": "G",
-                    # "itemTypeCode": "ITEM_TYPE_0149",
-                    # "itemTypeId": 318,
-                    # "itemTypeName": "成品",
-                    # "procureCoefficient": 1,
-                    # "procureQuantityOnhand": 962,
-                    # "procureUnit": "G",
-                    # "quantityOnhand": 962,
-                    # "saleCoefficient": 1,
-                    # "saleQuantityOnhand": 962,
-                    # "saleUnit": "G",
-                    # "specification": "zz",
-                    # "status": "0",
-                    # "statusZh": None,
-                    # "supplyCoefficient": 1,
-                    # "supplyQuantityOnhand": 962,
-                    # "unreceivedGoods": 100,
                 }
             ],
             "salesData": "2025-06-11 10:21:26",
             "userId": 1,
-            # "taxRate": None,
-
-            # "userName": "admin"
         }
 
         relative_url = "admin-api/mes/sm/sales"
@@ -111,7 +80,7 @@ class SaleOrder:
         }
         return  payload
 
-    def processInstance_cancleFlow(self, business_id, payload):
+    def processInstance_cancleFlow(self, payload):
         "销售管理-销售订单明细--批量审批"
         relative_url = "admin-api/oa/myTask/commitTask"
 
@@ -127,5 +96,5 @@ if __name__ == "__main__":
     # 调用 订单新增，查询订单，审核订单 方法
     business_id = sale_order_instance.sale_order_add()
     payload = sale_order_instance.commit_task_by_business_id(business_id)
-    response_code = sale_order_instance.processInstance_cancleFlow(business_id, payload)
+    response_code = sale_order_instance.processInstance_cancleFlow(payload)
     print(f"审批返回状态码：{response_code}")

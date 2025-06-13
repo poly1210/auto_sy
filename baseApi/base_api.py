@@ -1,3 +1,5 @@
+import requests
+
 from baseApi.run_method import RunMethod
 from common.read_yaml import ReadYaml
 from common.read_yaml import write_token
@@ -252,6 +254,27 @@ class AllApi(object):
         except Exception as e:
             print("接口访问出错啦~ %s" % e)
 
+    #直接发送post请求，并且负载是表单格式，不是json
+    def send_post_format_direct(self, relative_url, data):
+        """
+        通过拼接 URL 方式直接发起 POST请求，不依赖 yml 配置
+        """
+        try:
+            url = self.read_config["pre-url"] + relative_url
+            auth_token = self.read_token["token"]
+            headers = {
+                "Authorization": f"Bearer {auth_token}",
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+            print("\n")
+            print(f"请求URL: {url}")
+            print("请求头:", headers)
+            # 忽略不安全的请求警告信息
+            requests.packages.urllib3.disable_warnings()
+            response = requests.post(url, data=data, headers=headers, verify=False)
+            return response.json()
+        except Exception as e:
+            print("接口访问出错啦~ %s" % e)
 
 if __name__ == '__main__':
     api = AllApi()
