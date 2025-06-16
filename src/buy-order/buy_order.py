@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 from baseApi.base_api import AllApi
 
 #采购订单生成
@@ -14,9 +16,19 @@ class BuyOrder:
         purchase_code = self.api.send_get_direct(relative_url)
         return purchase_code
 
+    def vendor_info_get(self,vendor_name):
+        # 根据姓名，查询供应商(可以把这个查询的方法卸载baseapi里面复用)
+        encoded_vendor_name = quote(vendor_name)
+        relative_url = f"admin-api/mes/md/vendor/list?pageNum=1&pageSize=10&vendorName={encoded_vendor_name}"
+
+        response = self.api.send_get_direct(relative_url)
+
+        return response["rows"][0]
+
     def buy_order_add(self):
         """采购管理-采购订单-新增"""
         relative_url = "admin-api/mes/po/purchase"
+        # 这里的采购数量，单价，税率和日期都要后期再填，可以采用查询客户，在查询采购物料信息来填负载，但如果添加多个物料的话，有点麻烦
         payload = {
             "purchaseCode": self.auto_buy_code(),
             "vendorName": "嘿嘿嘿1",
@@ -28,36 +40,36 @@ class BuyOrder:
                 {
                     # "batchManagement": False,
                     "clientItemCode": "FEFREDFREWR45435",
-                    # "index": 1,
-                    # "inventoryCoefficient": 1,
-                    # "inventoryUnit": "个",
-                    # "isEnable": True,
-                    # "isSafeStock": False,
                     "itemCode": "JYXM202506040001",
                     "itemId": 3943,
                     "itemName": "佛挡杀佛是否",
                     "itemNum": 1,
-                    # "itemSpec": "csck",
-                    # "itemTypeCode": "ITEM_TYPE_0149",
-                    # "itemTypeId": 318,
-                    # "itemTypeName": "成品",
-                    # "packageName": "fsdfsdfsdf",
-                    # "params": {},
-                    "procureCoefficient": 1,
-                    "procureUnit": "个",
-                    # "saleCoefficient": 1,
-                    # "saleUnit": "个",
-                    # "specification": "csck",
-                    # "status": "0",
-                    # "supplyCoefficient": 1,
-                    # "supplyUnit": "个",
                     "taxMoney": 1,
                     "taxPrice": 1,
                     "taxRate": 0,
                     "totalMoney": 1,
                     "unitMoney": 1,
                     "unitOfMeasure": "个",
-                    "unreceivedGoods": 1,
+                    "procureCoefficient": 1,
+                    "procureUnit": "个",
+                    # "unreceivedGoods": 1,
+                    # "index": 1,
+                    # "inventoryCoefficient": 1,
+                    # "inventoryUnit": "个",
+                    # "isEnable": True,
+                    # "isSafeStock": False,
+                    # "itemSpec": "csck",
+                    # "itemTypeCode": "ITEM_TYPE_0149",
+                    # "itemTypeId": 318,
+                    # "itemTypeName": "成品",
+                    # "packageName": "fsdfsdfsdf",
+                    # "params": {},
+                    # "saleCoefficient": 1,
+                    # "saleUnit": "个",
+                    # "specification": "csck",
+                    # "status": "0",
+                    # "supplyCoefficient": 1,
+                    # "supplyUnit": "个",
                     # "warehouseCode": "WH243",
                     # "warehouseId": 353,
                     # "warehouseInfo": [353],
@@ -68,10 +80,10 @@ class BuyOrder:
             # "preAmount": 0,
             "purchaseData": "2025-06-09 09:26:19",
             # "status": "0",
-            "taxRate": 2,
+            # "taxRate": 2,
             # "userId": 1,
             # "userName": "admin",
-            "vendorId": 269
+             "vendorId": 269
         }
 
         # 发送 POST 请求（JSON 格式）

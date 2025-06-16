@@ -12,12 +12,14 @@ class ReadSalesXlsx():
     def __init__(self):
         self.api = AllApi()
 
-    def clientid_get(self, client_name):
+    def client_id_get(self, client_name):
         """从表格中传入的客户姓名拿到客户id"""
+        #quote是将中文名字转换为编码
         encoded_client_name = quote(client_name)
         relative_url = f"admin-api/mes/md/client/list?pageNum=1&pageSize=10&clientName={encoded_client_name}"
 
         response = self.api.send_get_direct(relative_url)
+
 
         if response.get("code") == 200:
             data = response.get("data", {})
@@ -106,7 +108,7 @@ class ReadSalesXlsx():
 
             payload = {
                 "salesCode": str(first_row["salesCode"]),
-                "clientId": self.clientid_get(client_name),
+                "clientId": self.client_id_get(client_name),
                 "userId": self.userid_get(user_name),
                 "salesData": pd.to_datetime(first_row["salesData"]).strftime("%Y-%m-%d"),
                 "goodsTime": pd.to_datetime(first_row["goodsTime"]).strftime("%Y-%m-%d"),

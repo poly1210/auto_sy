@@ -1,3 +1,6 @@
+from datetime import datetime
+from urllib.parse import quote
+
 from baseApi.base_api import AllApi
 
 
@@ -15,27 +18,69 @@ class ProductionRequisition:
         issue_code = self.api.send_get_direct(relative_url)
         return issue_code
 
+    def production_requisition_payload_list_get(self, code):
+        """获取生产领料单负载的主体和列表部分"""
+        # purchaseTemplateId = self.buy_order_payload_get()
+        relative_url = f"admin-api/mes/pro/workorderV1/select?pageNum=1&pageSize=50&workorderCode={code}&issueType=0&isReturn=false"
+        response = self.api.send_get_direct(relative_url)
+        data = response["data"]
+        return data["father"][0],data["children"]
+
+    def warehouse_info_get(self, name):
+        """根据仓库名称查询仓库信息，返回完整仓库对象"""
+        name = quote(name)
+        relative_url = f"admin-api/mes/wm/warehouse/list?pageNum=1&pageSize=10&warehouseName={name}"
+        response = self.api.send_get_direct(relative_url)
+
+        if not response.get("rows"):
+            raise ValueError(f"未找到名为 {name} 的仓库，请确认仓库是否存在")
+
+        warehouse_info = response["rows"][0]  # 取第一个匹配结果
+        return warehouse_info
+
     def production_requisition_add(self):
         """生产管理-生产领料"""
         relative_url = "admin-api/mes/wm/issueheader"
-        # 这里的payload十分复杂，等到后面再继续补上
-        # payload = {
-        #
-        # }
+        data_main, data_list = self.production_requisition_payload_list_get("MO202506060005")
 
-        # 发送 POST 请求（JSON 格式）
+        # 获取当前时间并格式化
+        current_time = datetime.now()
+        formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+        # 获取仓库信息（例如“总仓库”）
+        warehouse_info = self.warehouse_info_get("总仓库")  # 可以改为参数传入不同仓库名
+
+        # 处理 list 数据，添加 issueQuantity 和仓库信息
+        updated_data_list = []
+        for index, item in enumerate(data_list, start=1):
+            new_item = item.copy()
+            # 添加领料数量
+            new_item["quantityIssued"] = item.get("unpickedQuantity")
+            new_item["index"] = index,
+            # 添加仓库信息
+            new_item.update({
+                "warehouseId": warehouse_info["warehouseId"],
+                "warehouseName": warehouse_info["warehouseName"],
+                "warehouseCode": warehouse_info["warehouseCode"]
+            })
+            updated_data_list.append(new_item)
+
+        # 构建 payload
+        payload = {
+            "issueCode": self.auto_production_requisition_code(),
+            "issueDate": formatted_time,
+            **data_main,
+            "issueType": "生产领料",
+            "status": 0,
+            "list": updated_data_list,  # 使用更新后的列表
+        }
+
+        # 发送请求
         response = self.api.send_post_direct(relative_url, payload)
-
-        # 打印日志调试
         print("新增领料单响应:", response)
 
-        # 断言接口成功
         assert response["code"] == 200, f"新增领料单失败，返回：{response}"
-
-        # 保存 businessId
-        business_id = response["data"]["businessId"]
-
-        return business_id
+        return response["data"]["businessId"]
 
 
     def production_requisition_get(self, business_id):
@@ -54,7 +99,7 @@ class ProductionRequisition:
 
     def commit_task_by_business_id(self, business_id):
         """封装好payload数据"""
-        insid, taskid = self.sale_out_get(business_id)
+        insid, taskid = self.production_requisition_get(business_id)
 
 
         payload = {
@@ -67,8 +112,8 @@ class ProductionRequisition:
         }
         return  payload
 
-    def processInstance_cancleFlow(self, business_id, payload):
-        "生产管理--批量审批"
+    def process_instance_cancel_flow(self,payload):
+        """生产管理--批量审批"""
         relative_url = "admin-api/oa/myTask/commitTask"
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
@@ -83,5 +128,5 @@ if __name__ == "__main__":
     # 调用 订单新增，查询订单，审核订单 方法
     business_id = production_requisition_instance.production_requisition_add()
     payload = production_requisition_instance.commit_task_by_business_id(business_id)
-    response_code = production_requisition_instance.processInstance_cancleFlow(business_id, payload)
+    response_code = production_requisition_instance.process_instance_cancel_flow(payload)
     print(f"审批返回状态码：{response_code}")

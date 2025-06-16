@@ -14,12 +14,45 @@ class BuyInspection:
         qc_purchase_inspection_code = self.api.send_get_direct(relative_url)
         return qc_purchase_inspection_code
 
+    def buy_order_payload_get(self, receipts_code):
+        """根据到货单号获取采购检验单负载的主体部分"""
+        relative_url =f"admin-api/qc/inspection/proUninspectedList?pageNum=1&pageSize=10&receiptsCode={receipts_code}"
+        response = self.api.send_get_direct(relative_url)
+        data = response["rows"][0]
+        purchase_template_id = data["purchaseTemplateId"]
+        #返回采购检验编号，给下面查询方法
+        return data,purchase_template_id
+
+
+    def buy_order_payload_list_get(self,purchase_template_id):
+        """获取采购检验单负载的列表部分"""
+        # purchaseTemplateId = self.buy_order_payload_get()
+        relative_url = f"admin-api/qc/template/{purchase_template_id}"
+        response = self.api.send_get_direct(relative_url)
+        data = response["data"]
+        return data["list"]
+
     def buy_inspection_add(self):
         """生产管理-采购检验单-新增"""
         relative_url = "admin-api/qc/inspection/purchase"
+        receipts_code = "DH202505220004"
+        main_data, purchase_template_id = self.buy_order_payload_get(receipts_code)
+        list_data = self.buy_order_payload_list_get(purchase_template_id)
         payload = {
+            "inspectionCode": self.auto_buy_inspection_code(),
+            **main_data,
+            "inspectionDate":  "2025-06-16",
+            "createBy": "admin",
+            "damagedQuantity" : 0,
+            "inspectionQuantity" : 1,
+            "returnQuantity" : 0,
+            "judgmentStatus" : 1,
+            "qcUserName" : "admin",
+            "qcUserId" : 1,
+            "list" : list_data,
 
         }
+        print("发送的 payload:", payload)
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)
 
@@ -50,7 +83,7 @@ class BuyInspection:
 
     def commit_task_by_business_id(self, business_id):
         """封装好审批的payload数据"""
-        insid, taskid = self.buy_order_get(business_id)
+        insid, taskid = self.buy_inspection_get(business_id)
 
         payload = {
             "taskid": taskid,
@@ -62,8 +95,8 @@ class BuyInspection:
         }
         return payload
 
-    def processInstance_cancleFlow(self, business_id, payload):
-        "采购管理-采购订单明细--批量审批"
+    def process_instance_cancel_flow(self,payload):
+        """采购管理-采购订单明细--批量审批"""
         relative_url = "admin-api/oa/myTask/commitTask"
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
@@ -79,5 +112,5 @@ if __name__ == "__main__":
     # 调用 采购订单新增，查询订单，审核订单 方法
     business_id = bi.buy_inspection_add()
     payload = bi.commit_task_by_business_id(business_id)
-    response_code = bi.processInstance_cancleFlow(business_id, payload)
+    response_code = bi.process_instance_cancel_flow(payload)
     print(f"审批返回状态码：{response_code}")

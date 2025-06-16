@@ -18,7 +18,9 @@ class SaleOrder:
         """销售管理-销售订单-新增"""
         payload = {
             "salesCode": self.auto_sale_code(),
-             "clientId": 1028,
+             "clientId": 1018,
+            # 感觉客户姓名可以带上，方便和表格统一，并且客户id在网页上是不显示名字的
+            # "clientName":"客户名称123",
             #选择客户后会带入币种 "currency": "GBP",
             "list": [
                 {
@@ -28,10 +30,10 @@ class SaleOrder:
                     "itemCode": "IF20250528001",
                     "itemId": 3870,
                     "itemName": "桌子",
-                    "itemNum": 6000,
+                    "itemNum": 60,
                 }
             ],
-            "salesData": "2025-06-11 10:21:26",
+            "salesData": "2025-06-15 10:21:26",
             "userId": 1,
         }
 
