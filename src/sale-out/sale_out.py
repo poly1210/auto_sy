@@ -1,5 +1,5 @@
 from baseApi.base_api import AllApi
-
+from urllib.parse import quote
 
 #销售出库
 class SaleOut:
@@ -15,13 +15,35 @@ class SaleOut:
         productsalse_code = self.api.send_get_direct(relative_url)
         return productsalse_code
 
+    def process_reporting_payload_get(self, code):
+        """根据销售订单编号，获取负载主体部分"""
+        relative_url = f"admin-api/mes/sm/sales/select?pageNum=1&pageSize=50&salesCode={code}&isReturn=0"
+        response = self.api.send_get_direct(relative_url)
+        data = response["data"]
+        return data["father"][0], data["children"]
+
+    def client_info_get(self, name):
+        """根据客户名称查员工信息，返回用户id"""
+        name_code = quote(name)
+        relative_url = f"admin-api/mes/md/client/list?pageNum=1&pageSize=10&clientName={name_code}"
+        response = self.api.send_get_direct(relative_url)
+
+        if not response.get("rows"):
+            raise ValueError(f"未找到名为 {name} 的客户，请确认客户是否存在")
+
+        client_info = response["rows"][0]  # 取第一个匹配结果
+        return client_info["userId"],client_info["userName"]
+
     def sale_out_add(self):
         """销售管理-销售订单-出库"""
         relative_url = "admin-api/mes/wm/productsalse/addNew"
-        # 这里的payload十分复杂，等到后面再继续补上
-        # payload = {
-        #
-        # }
+
+        payload = {
+            "salseCode": self.auto_sale_out_code(),
+            "salseData" :"2025-06-17 17:45:48"
+
+
+        }
 
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)

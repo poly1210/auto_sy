@@ -1,5 +1,0 @@
-admin-api/mes/po/purchase/list:
-  method: GET
-  name: 采购管理--采购订单--采购订单列表
-  url: admin-api/mes/po/purchase/list?pageNum=1&pageSize=10
-  data:

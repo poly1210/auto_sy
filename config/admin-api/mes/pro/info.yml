@@ -1,5 +1,0 @@
-# --------------生产管理--投产派工--工单工序信息--列表-----------
-admin-api/mes/pro/info/list:
-  data:
-  method: GET
-  url: admin-api/mes/pro/info/list?pageNum=1&pageSize=10

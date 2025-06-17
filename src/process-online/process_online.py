@@ -21,10 +21,10 @@ class ProcessOnline():
         """工序上线"""
         relative_url = "admin-api/pro/online/batch"
         payload_id,online_quantity=self.process_online_payload_get("MO202506060009")
-        payload = {
+        payload = [{
             "id":payload_id,
             "onlineQuantity" : online_quantity ,
-        }
+        }]
         print(payload)
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)

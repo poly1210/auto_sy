@@ -1,6 +1,0 @@
-# --------------销售管理-销售订单-批量通过------------
-admin-api/oa/flowBatch/sm_sales/pass:
-  data:
-  method: GET
-  name: 销售管理-销售订单-批量通过
-  url: admin-api/oa/flowBatch/sm_sales/pass/1032
