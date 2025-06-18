@@ -48,9 +48,8 @@ class ProcessInspection:
             new_item["inspectionQuantity"] = 0
             new_item["qualifiedQuantity"] = 0
             new_item["unqualifiedQuantity"] = 0
-
-
             updated_data_list.append(new_item)
+
         payload = {
             "list": updated_data_list,
             "inspectionCode": self.auto_process_inspection_code(),
@@ -67,7 +66,12 @@ class ProcessInspection:
             # "processId":main_data["processId"],
             # 两个新增的必需项
             "qualifiedQuantity" : main_data["inspectionQuantity"],
-            "proWorkorderInfoId": 346,
+            "proWorkorderInfoId": main_data["id"],
+            "workorderDeptId": main_data["deptId"],
+            "workorderDeptName":main_data["deptNameZH"] ,
+            "workorderOrderNum": main_data["orderNum"],
+            "workorderType": "process_inspection",
+
 
             # "remark": null ,
         }
