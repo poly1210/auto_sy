@@ -16,6 +16,8 @@ class BuyOrder:
         purchase_code = self.api.send_get_direct(relative_url)
         return purchase_code
 
+
+
     def vendor_info_get(self,vendor_name):
         # 根据姓名，查询供应商(可以把这个查询的方法卸载baseapi里面复用)
         encoded_vendor_name = quote(vendor_name)
