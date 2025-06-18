@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from baseApi.base_api import AllApi
 from urllib.parse import quote
 #产品送检单
@@ -22,7 +24,7 @@ class ProductionInspection:
 
 
     def production_inspection_payload_list_get(self, code):
-        """根据到货单号获取采购检验单负载的列表部分"""
+        """根据到货单号获取采购检验单负载的主体部分"""
         relative_url =f"admin-api/mes/pro/workorderV1/selectByInspection?pageNum=1&pageSize=10&workorderCode={code}"
         response = self.api.send_get_direct(relative_url)
         data = response["rows"][0]
@@ -43,22 +45,42 @@ class ProductionInspection:
     def production_inspection_add(self):
         """生产管理-产品入库-产品送检单"""
         relative_url = "admin-api/qc/product/inspection"
-        data_list = self.production_inspection_payload_list_get("MO202506180004")
+        # 提取数据
+        data_list = self.production_inspection_payload_list_get("MO202506180005")
         data_list["batchCode"] = self.auto_batch_code()
+
+        line_data = {
+            "documentId": data_list["documentId"],
+            "documentLineId": data_list["documentLineId"],
+            "documentCode": data_list["documentCode"],
+            "itemId": data_list["itemId"],
+            "itemCode": data_list["itemCode"],
+            "itemName": data_list["itemName"],
+            "itemSpec": data_list["itemSpec"],
+            "supplyUnit": data_list["supplyUnit"],
+            "quantity": int(data_list["quantity"]),
+            "warehouseId": data_list["warehouseId"],
+            "warehouseCode": data_list["warehouseCode"],
+            "warehouseName": data_list["warehouseName"],
+            "batchCode": data_list["batchCode"],
+            # 可选字段（视接口文档而定）
+            "unitPrice": 0.0,
+            "totalAmount": 0.0,
+            "qualifiedQty": int(data_list["quantity"]),
+            "unQualifiedQty": 0,
+            "status": "PENDING_INSPECTION"
+        }
         warehouse_info = self.warehouse_info_get("总仓库")
-        # data_list["quantity"] = int(data_list["quantity"])
+
         payload = {
-            "createBy":"admin",
             "inspectionCode": self.auto_production_inspection_code(),
-            "inspectionDate": "2025-06-18",
-            "deptList" :data_list["deptList"],
-            "lines" :[data_list] ,
+            "inspectionDate": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),  # ✅ 完整时间格式
+            "deptList": [100, 101, 104],
+            "lines": [line_data],
             "userDeptName": "生产办公室",
             "warehouseId": warehouse_info["warehouseId"],
-            "warehouseName": warehouse_info["warehouseName"],
-            "warehouseCode": warehouse_info["warehouseCode"],
-            "warehouseInfo":[warehouse_info["warehouseId"]],
-
+            "warehouseName": "总仓库",
+            "warehouseCode": warehouse_info["warehouseCode"]
         }
         print(payload)
 

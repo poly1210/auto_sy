@@ -1,9 +1,9 @@
 
 [//]: # (说明)
 
-2、安装依赖： pip install -r requirements.txt
-3、在 config/config.yml 中配置账号、密码
-4、运行用例： pytest testCase/ --html=reports/report.html
+1、安装依赖： pip install -r requirements.txt
+2、在 config/config.yml 中配置账号、密码
+
 
 [//]: # (可能需要用到的命令)
 ----------------------------------
