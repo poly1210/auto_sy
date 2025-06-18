@@ -45,8 +45,22 @@ class ProductionInspection:
         relative_url = "admin-api/qc/product/inspection"
         data_list = self.production_inspection_payload_list_get("MO202506180004")
         data_list["batchCode"] = self.auto_batch_code()
+        data_list["awaitingQuantity"] = data_list["quantity"]
+        data_list["inspectionQuantity"] = data_list["quantity"]
+        data_list["isAuto"] = "true"
+        data_list["unitOfMeasure"] = data_list["supplyUnit"]
+        data_list["workorderCode"] = data_list["documentCode"]
+        # 这两个赋值写死的，在遇到多订单的时候可能会报错
+        data_list["workorderSerialNumber"] = 1
+        data_list["index"] = 1
+        data_list["bomId"] = data_list["documentLineId"]
+
+
         warehouse_info = self.warehouse_info_get("总仓库")
         # data_list["quantity"] = int(data_list["quantity"])
+        # 新增：将 workshopName 转换为列表格式
+        if "workshopName" in data_list and isinstance(data_list["workshopName"], str):
+            data_list["workshopName"] = [item.strip() for item in data_list["workshopName"].split(",")]
         payload = {
             "createBy":"admin",
             "inspectionCode": self.auto_production_inspection_code(),

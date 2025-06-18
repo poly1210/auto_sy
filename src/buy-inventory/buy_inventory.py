@@ -8,73 +8,44 @@ class BuyInventory:
         self.api = AllApi()
         self.api.send_login("admin-api/config.yml")
 
+    def auto_buy_inventory_code(self):
+        """获取采购入库订单的自动编号"""
+        relative_url ="admin-api/system/autocode/get/ITEMRECPT_CODE"
+        item_recept_code = self.api.send_get_direct(relative_url)
+        return item_recept_code
+
+    def buy_inventory_payload_list_get(self, code):
+        """获取采购检验单负载的主体和列表部分"""
+        # purchaseTemplateId = self.buy_order_payload_get()
+        relative_url = f"admin-api/mes/po/purchase/select?pageNum=1&pageSize=50&purchaseCode={code}&isReturn=0"
+        response = self.api.send_get_direct(relative_url)
+        data = response["data"]
+        return data["father"][0],data["children"]
 
 
     def buy_inventory_add(self):
         """采购管理-采购入库-新增"""
         relative_url = "admin-api/mes/wm/itemrecpt"
+        data_main,data_list = self.buy_inventory_payload_list_get("PUR2025236")
+        # 遍历data_list，为每个商品行添加入库数量
+        updated_data_list = []
+        for item in data_list:
+            # 复制原商品行数据，避免修改原始对象
+            new_item = item.copy()
+            # 添加入库数量（注意参数名可能需要根据后端调整）
+            new_item["quantityRecived"] = 1
+            updated_data_list.append(new_item)
         payload = {
-            "currency": "美元",
-            "distinguish": "0",
-            "iqcCode": None,
-            "isIncludeTax": "Y",
-            "list": [
-                {
-                    "areaCode": None,
-                    "areaId": None,
-                    "areaName": None,
-                    "batchManagement": False,
-                    "goodsTime": None,
-                    "index": 1,
-                    "inventoryCoefficient": 1,
-                    "inventoryUnit": "个",
-                    "itemCode": "JYXM202506040001",
-                    "itemId": 3943,
-                    "itemName": "佛挡杀佛是否",
-                    "itemNum": 1,
-                    "itemSpec": None,
-                    "locationCode": None,
-                    "locationId": None,
-                    "locationName": None,
-                    "procureCoefficient": 1,
-                    "procureQuantityOnhand": 5305,
-                    "procureUnit": "个",
-                    "purchaseId": 438,
-                    "purchaseLineId": 696,
-                    "quantityOnhand": 5305,
-                    "quantityRecived": 1,
-                    "receivedGoods": 0,
-                    "specification": "csck",
-                    "taxRate": 0,
-                    "totalMoney": 1,
-                    "unitMoney": 1,
-                    "unitOfMeasure": "个",
-                    "unreceivedGoods": 1,
-                    "warehouseCode": "WH243",
-                    "warehouseId": 353,
-                    "warehouseInfo": [353],
-                    "warehouseName": "成品仓库",
-                    "warehouseNameZh": "成品仓库"
-                }
-            ],
-            "poCode": None,
-            "purchaseId": 438,
-            #单据编号也要自动获取
-            "recptCode": "R20250609003",
-            "recptDate": "2025-06-09 14:29:27",
-            "recptId": None,
-            "recptName": None,
-            "remark": None,
-            "status": None,
-            "taxRate": 2,
-            "type": "00",
-            "userId": 2,
-            "userName": "cg",
-            "vendorCode": "V00139",
-            "vendorId": 269,  # 注意：若后端要求数字类型，需移除引号（原数据中为字符串"269"）
-            "vendorName": "嘿嘿嘿1",
-            "warehouseInfo": []  # 注意：此处与list内的warehouseInfo字段重复，需根据业务保留其一
+            "recptCode" : self.auto_buy_inventory_code(),
+            "recptDate":"2025-06-16 14:19:32",
+            **data_main,
+            # type代表不同类型的入库方式
+            "type":"00",
+            # 这个入库数量的英文是跟后端同步的，后端就是错的，而且不知道为什么查询的时候没带入库数量
+            # 入库数量是放在list里面的
+            "list": updated_data_list ,
         }
+        print(payload)
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)
 
