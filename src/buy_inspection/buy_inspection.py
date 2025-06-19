@@ -1,6 +1,6 @@
 from baseApi.base_api import AllApi
 
-#采购订单生成
+#采购检验单生成
 class BuyInspection:
     business_id = None  # 类变量存储 businessId
 
@@ -35,7 +35,7 @@ class BuyInspection:
     def buy_inspection_add(self):
         """生产管理-采购检验单-新增"""
         relative_url = "admin-api/qc/inspection/purchase"
-        receipts_code = "DH202505220004"
+        receipts_code = "DH202506160001"
         main_data, purchase_template_id = self.buy_order_payload_get(receipts_code)
         list_data = self.buy_order_payload_list_get(purchase_template_id)
         payload = {
@@ -68,7 +68,7 @@ class BuyInspection:
         return business_id
 
     def buy_inspection_get(self, business_id):
-        """采购订单 - 查询详情，返回 insid 和 taskid"""
+        """采购检验订单 - 查询详情，返回 insid 和 taskid"""
         relative_url = f"admin-api/qc/inspection/purchase/{business_id}"
 
         # 通过 AllApi 的简洁 GET 方法直接发请求
@@ -96,7 +96,7 @@ class BuyInspection:
         return payload
 
     def process_instance_cancel_flow(self,payload):
-        """采购管理-采购订单明细--批量审批"""
+        """采购管理-采购检验订单明细--批量审批"""
         relative_url = "admin-api/oa/myTask/commitTask"
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     # 创建 SaleOrder 实例
     bi = BuyInspection()
 
-    # 调用 采购订单新增，查询订单，审核订单 方法
+    # 调用 检验订单新增，查询订单，审核订单 方法
     business_id = bi.buy_inspection_add()
     payload = bi.commit_task_by_business_id(business_id)
     response_code = bi.process_instance_cancel_flow(payload)

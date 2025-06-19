@@ -1,8 +1,9 @@
+from datetime import datetime
 from urllib.parse import quote
 
 from baseApi.base_api import AllApi
 
-#采购订单，通过添加物料方式生成
+#采购订单，通过选单的方式生成，
 class BuyOrder:
     business_id = None  # 类变量存储 businessId
 
@@ -16,10 +17,16 @@ class BuyOrder:
         purchase_code = self.api.send_get_direct(relative_url)
         return purchase_code
 
+    def buy_order_apply_info(self ,code):
+        relative_url =f"admin-api/po/purchase/approve/select?pageNum=1&pageSize=50&purchaseCode={code}"
+        apply_info = self.api.send_get_direct(relative_url)
+        data_main = apply_info["data"]["father"][0]
+        data_list = apply_info["data"]["children"]
+        return data_main, data_list
 
 
-    def vendor_info_get(self,vendor_name):
-        # 根据姓名，查询供应商(可以把这个查询的方法卸载baseapi里面复用)
+    def vendor_id_get(self,vendor_name):
+        # 根据姓名，查询供应商
         encoded_vendor_name = quote(vendor_name)
         relative_url = f"admin-api/mes/md/vendor/list?pageNum=1&pageSize=10&vendorName={encoded_vendor_name}"
 
@@ -27,66 +34,60 @@ class BuyOrder:
 
         return response["rows"][0]
 
+    def userid_get(self, user_name):
+        encoded = quote(user_name)
+        url = f"admin-api/system/user/list?pageNum=1&pageSize=10&userName={encoded}"
+        res = self.api.send_get_direct(url)
+        if res["code"] == 200 and res["total"] > 0:
+            return res["rows"][0]["userId"]
+        raise ValueError(f"未找到采购员：{user_name}")
+
     def buy_order_add(self):
         """采购管理-采购订单-新增"""
         relative_url = "admin-api/mes/po/purchase"
-        # 这里的采购数量，单价，税率和日期都要后期再填，可以采用查询客户，在查询采购物料信息来填负载，但如果添加多个物料的话，有点麻烦
+        data_main ,data_list = self.buy_order_apply_info("PUA2025027")
+        # 如果申请人和采购员是一个人的话，那这里就不需要额外获取user_name，否则就需要覆盖
+        # 供应商也是同理
+        user_name = "admin"
+        vendor_name = "测试3/19供应商"
+        delivery_date = "2025-06-28"
+        vendor_info = self.vendor_id_get(vendor_name)
+        vendor_id = vendor_info["vendorId"]
+        vendor_code = vendor_info["vendorCode"]
+        currency = vendor_info["currency"]
+        user_id = self.userid_get(user_name)
+        # 获取当前时间
+        now = datetime.now()
+        # 格式化为 YYYY-MM-DD
+        formatted_date = now.strftime("%Y-%m-%d")
+
+
+        updated_data_list = []
+        for index, item in enumerate(data_list, start=1):
+            new_item = item.copy()
+
+            new_item["goodsTime"] = delivery_date
+            # 这里采购申请单的采购数量是总数量，但实际新增订单的时候是改成了可执行数量
+            new_item["itemNum"] = item["executableNum"]
+
+            updated_data_list.append(new_item)
+
+
         payload = {
+            **data_main,
             "purchaseCode": self.auto_buy_code(),
-            "vendorName": "嘿嘿嘿1",
-            "vendorCode": "V00139",
-            #"currency": "美元",
-            #"isApprove": "order",
-            #"isIncludeTax": "Y",
-            "list": [
-                {
-                    # "batchManagement": False,
-                    "clientItemCode": "FEFREDFREWR45435",
-                    "itemCode": "JYXM202506040001",
-                    "itemId": 3943,
-                    "itemName": "佛挡杀佛是否",
-                    "itemNum": 1,
-                    "taxMoney": 1,
-                    "taxPrice": 1,
-                    "taxRate": 0,
-                    "totalMoney": 1,
-                    "unitMoney": 1,
-                    "unitOfMeasure": "个",
-                    "procureCoefficient": 1,
-                    "procureUnit": "个",
-                    # "unreceivedGoods": 1,
-                    # "index": 1,
-                    # "inventoryCoefficient": 1,
-                    # "inventoryUnit": "个",
-                    # "isEnable": True,
-                    # "isSafeStock": False,
-                    # "itemSpec": "csck",
-                    # "itemTypeCode": "ITEM_TYPE_0149",
-                    # "itemTypeId": 318,
-                    # "itemTypeName": "成品",
-                    # "packageName": "fsdfsdfsdf",
-                    # "params": {},
-                    # "saleCoefficient": 1,
-                    # "saleUnit": "个",
-                    # "specification": "csck",
-                    # "status": "0",
-                    # "supplyCoefficient": 1,
-                    # "supplyUnit": "个",
-                    # "warehouseCode": "WH243",
-                    # "warehouseId": 353,
-                    # "warehouseInfo": [353],
-                    # "warehouseName": "成品仓库",
-                    # "warehouseNameZh": "成品仓库"
-                }
-            ],
-            # "preAmount": 0,
-            "purchaseData": "2025-06-09 09:26:19",
-            # "status": "0",
-            # "taxRate": 2,
-            # "userId": 1,
-            # "userName": "admin",
-             "vendorId": 269
-        }
+            "purchaseData" :formatted_date,
+            "deliveryDate" : delivery_date,
+            "vendorId": vendor_id,
+            "vendorName": vendor_name,
+            "vendorCode": vendor_code,
+            "currency": currency,
+            "userName": user_name,
+            "userId": user_id,
+            "list": updated_data_list,
+            }
+
+
 
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)

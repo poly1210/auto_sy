@@ -41,7 +41,7 @@ class ProductionRequisition:
     def production_requisition_add(self):
         """生产管理-生产领料"""
         relative_url = "admin-api/mes/wm/issueheader"
-        data_main, data_list = self.production_requisition_payload_list_get("MO202506060005")
+        data_main, data_list = self.production_requisition_payload_list_get("MO202506190002")
 
         # 获取当前时间并格式化
         current_time = datetime.now()
@@ -56,7 +56,7 @@ class ProductionRequisition:
             new_item = item.copy()
             # 添加领料数量
             new_item["quantityIssued"] = item.get("unpickedQuantity")
-            new_item["index"] = index,
+            new_item["index"] = index
             # 添加仓库信息
             new_item.update({
                 "warehouseId": warehouse_info["warehouseId"],

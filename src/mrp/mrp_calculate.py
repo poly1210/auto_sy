@@ -45,8 +45,10 @@ class MRPCalculation:
         #sales_item["index"] = 1
         payload = {
             "calculationCode": self.auto_mrp_code(),
-            "calculationDate": "2025-06-13",
+            # 这里的单据日期直接选择和销售订单的销售日期相同
+            "calculationDate": sales_item["sourceOrderDate"],
             "list": [sales_item],
+            # 这三个需要前端传入
             "requirementsAnalysis": 1,
             "schemeId": 30,
             "schemeName": "测试方案"
