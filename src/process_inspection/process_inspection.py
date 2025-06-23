@@ -33,7 +33,7 @@ class ProcessInspection:
         return data["list"]
 
     def process_inspection_add(self):
-        """质量管理-工单检验-新增"""
+        """质量管理-工序检验-新增"""
         inspection_code = "MO202503180001"
         main_data, process_reporting_template_id = self.process_reporting_payload_get(inspection_code)
         print(main_data)

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from baseApi.base_api import AllApi
 
 #采购检验单生成
@@ -32,16 +34,20 @@ class BuyInspection:
         data = response["data"]
         return data["list"]
 
-    def buy_inspection_add(self):
+    def buy_inspection_add(self,code):
         """生产管理-采购检验单-新增"""
+        now = datetime.now()
+        # 格式化为 YYYY-MM-DD
+        formatted_date = now.strftime("%Y-%m-%d")
         relative_url = "admin-api/qc/inspection/purchase"
-        receipts_code = "DH202506160001"
+        receipts_code = code
         main_data, purchase_template_id = self.buy_order_payload_get(receipts_code)
         list_data = self.buy_order_payload_list_get(purchase_template_id)
+        # TODO :数量关系要改
         payload = {
             "inspectionCode": self.auto_buy_inspection_code(),
             **main_data,
-            "inspectionDate":  "2025-06-16",
+            "inspectionDate":  formatted_date,
             "createBy": "admin",
             "damagedQuantity" : 0,
             "inspectionQuantity" : 1,

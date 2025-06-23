@@ -1,7 +1,5 @@
 import json
-from typing import TypedDict
 from baseApi.base_api import AllApi
-
 
 #MRP运算列表
 class MRPCalculation:
@@ -36,8 +34,8 @@ class MRPCalculation:
 
     #调用post方法进行请求
     #schemeId是运算方案，requirementsAnalysis是运算模式（就两个，（1.物料需求分析 2.批次需求计划））
-    def mrp_calculation(self,sales_code: str,  scheme_id: int, scheme_name: str):
-
+    def mrp_calculation(self):
+        sales_code = "SAL2025237"
         #这里是查询到的list
         sales_item = self.mrp_list_info_get(sales_code)
         # 加上 operationQuantity 和 quantity 字段
@@ -52,8 +50,8 @@ class MRPCalculation:
             "list": [sales_item],
             # 这三个需要前端传入
             "requirementsAnalysis": 1,
-            "schemeId": scheme_id,
-            "schemeName": scheme_name
+            "schemeId": 30,
+            "schemeName": "测试方案"
         }
         print("请求体：", json.dumps(payload, ensure_ascii=False, indent=2))
 
@@ -71,13 +69,12 @@ class MRPCalculation:
         response = self.api.send_post_format_direct(relative_url, data)
         return response
 
-
 # 使用示例
 if __name__ == "__main__":
     # 创建 SaleOrder 实例
     MRPcal = MRPCalculation()
     # 调用方法请求
-    key = MRPcal.mrp_calculation("SAL2025237",30,"测试方案")
+    key = MRPcal.mrp_calculation()
     print(key)
     #生成生产计划和采购计划
     code = MRPcal.production_and_buy_plan(key)["code"]
