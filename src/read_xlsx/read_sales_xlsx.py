@@ -12,8 +12,6 @@ class ReadSalesXlsx:
     def __init__(self):
         self.api = AllApi()
 
-
-
     def client_id_get(self, client_name):
         encoded = quote(client_name)
         url = f"admin-api/mes/md/client/list?pageNum=1&pageSize=10&clientName={encoded}"

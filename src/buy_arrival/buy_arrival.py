@@ -14,6 +14,12 @@ class BuyArrival:
         dh_receipts_code = self.api.send_get_direct(relative_url)
         return dh_receipts_code
 
+    def auto_buy_arrival_batch_code(self):
+        """获取批次号"""
+        relative_url ="admin-api/system/autocode/get/BATCH_CODE"
+        dh_batch_code = self.api.send_get_direct(relative_url)
+        return dh_batch_code
+
     def warehouse_info_get(self, name):
         """根据仓库名称查询仓库信息，返回完整仓库对象"""
         name = quote(name)
@@ -36,10 +42,10 @@ class BuyArrival:
     def buy_arrival_add(self, purchase_code):
         """采购管理-采购到货单-新增"""
         now = datetime.now()
-        # 格式化为 YYYY-MM-DD
         formatted_date = now.strftime("%Y-%m-%d")
         relative_url = "admin-api/mes/wm/receipts"
         list_data = self.buy_order_arrival_payload_list_get(purchase_code)
+        # TODO 仓库要写成能配置
         warehouse_info = self.warehouse_info_get("总仓库")
         receipts_code = self.auto_buy_arrival_code()
 
@@ -51,6 +57,10 @@ class BuyArrival:
             item["warehouseInfo"] = [warehouse_info["warehouseId"]]
             item["receivedQuantity"] = item["notReceivedGoods"]
             # item["warehouseNameZh"] = warehouse_info["warehouseNameZh"]
+            if item.get("batchManagement", False):
+                item["batchCode"] = self.auto_buy_arrival_batch_code()
+
+
         payload = {
             "receiptsCode": receipts_code,
             "receiptsDate":  formatted_date,
@@ -77,8 +87,7 @@ class BuyArrival:
 
         # 保存 businessId
         business_id = response["data"]["businessId"]
-
-        return business_id
+        return business_id,receipts_code
 
     def buy_inspection_get(self, business_id):
         """查询详情，返回 insid 和 taskid"""
@@ -123,7 +132,7 @@ if __name__ == "__main__":
     ba = BuyArrival()
 
     # 调用 检验订单新增，查询订单，审核订单 方法
-    business_id = ba.buy_arrival_add("PUR2025134")
+    business_id, _ = ba.buy_arrival_add("PUR2025134")
     payload = ba.commit_task_by_business_id(business_id)
     response_code = ba.process_instance_cancel_flow(payload)
     print(f"审批返回状态码：{response_code}")

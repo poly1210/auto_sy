@@ -13,9 +13,8 @@ from src.read_xlsx.read_sales_xlsx import ReadSalesXlsx
 class SaleOrder:
     business_id = None  # 类变量存储 businessId
 
-    def __init__(self):
-        self.api = AllApi()
-        self.api.send_login("admin-api/config.yml")
+    def __init__(self, api):
+        self.api = api
 
     def auto_sale_code(self):
         """获取销售订单的自动编号"""

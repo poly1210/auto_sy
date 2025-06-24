@@ -65,8 +65,8 @@ class BuyOrderNew:
         }
         return payload
 
-    def process_instance_cancel_flow(self, business_id, payload):
-        "采购管理-采购订单明细--批量审批"
+    def process_instance_cancel_flow(self, payload):
+        """采购管理-采购订单明细--批量审批"""
         relative_url = "admin-api/oa/myTask/commitTask"
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
@@ -86,5 +86,5 @@ if __name__ == "__main__":
         # 调用 订单新增，查询订单，审核订单 方法
         business_id = buy_order_instance.buy_order_add(data)
         payload = buy_order_instance.commit_task_by_business_id(business_id)
-        response_code = buy_order_instance.process_instance_cancel_flow(business_id, payload)
+        response_code = buy_order_instance.process_instance_cancel_flow(payload)
         print(f"审批返回状态码：{response_code}")

@@ -1,3 +1,4 @@
+from datetime import datetime
 
 from baseApi.base_api import AllApi
 from urllib.parse import quote
@@ -41,23 +42,42 @@ class BuyInventory:
         data = response["data"]
         return data["father"][0],data["children"]
 
+    def warehouse_info_get(self, name):
+        """根据仓库名称查询仓库信息，返回完整仓库对象"""
+        name = quote(name)
+        relative_url = f"admin-api/mes/wm/warehouse/list?pageNum=1&pageSize=10&warehouseName={name}"
+        response = self.api.send_get_direct(relative_url)
+
+        if not response.get("rows"):
+            raise ValueError(f"未找到名为 {name} 的仓库，请确认仓库是否存在")
+
+        warehouse_info = response["rows"][0]  # 取第一个匹配结果
+        return warehouse_info
 
 
-    def buy_inventory_add_by_order(self):
+    def buy_inventory_add_by_order(self,sales_code,warehouse_name):
         """采购管理-采购入库-新增-采购订单"""
         relative_url = "admin-api/mes/wm/itemrecpt"
-        data_main,data_list = self.buy_inventory_payload_list_get("PUR2025236")
+        data_main,data_list = self.buy_inventory_payload_list_get(sales_code)
+        now = datetime.now()
+        formatted_date = now.strftime("%Y-%m-%d")
         # 遍历data_list，为每个商品行添加入库数量
         updated_data_list = []
+        recept_code = self.auto_buy_inventory_code()
+        warehouse_info = self.warehouse_info_get(warehouse_name)
+
         for index, item in enumerate(data_list, start=1):
             new_item = item.copy()
             new_item["index"] = index
+            item["warehouseName"] = warehouse_info["warehouseName"]
+            item["warehouseCode"] = warehouse_info["warehouseCode"]
+            item["warehouseId"] = warehouse_info["warehouseId"]
             if new_item["batchManagement"] == "true":
                 new_item["batchCode"] = self.auto_batch_code()
             updated_data_list.append(new_item)
         payload = {
-            "recptCode" : self.auto_buy_inventory_code(),
-            "recptDate":"2025-06-19 14:19:32",
+            "recptCode" : recept_code,
+            "recptDate":formatted_date,
             **data_main,
             # type代表不同类型的入库方式
             "type":"00",
@@ -88,21 +108,20 @@ class BuyInventory:
         data = response["rows"][0]
         return data
 
-    def buy_inventory_add_by_inspection(self):
+    def buy_inventory_add_by_inspection(self,inspection_code):
         """采购管理-采购入库-新增-采购检验单"""
         relative_url = "admin-api/mes/wm/itemrecpt"
-        data_list = self.buy_inventory_inspection_payload_list_get("QCPI202505220001")
+        data_list = self.buy_inventory_inspection_payload_list_get(inspection_code)
         data_list["quantityRecived"] = data_list["inspectionQuantity"]
-        # vendor_info = self.vendor_id_get("wll测试供应商")
-        # vendor_id = vendor_info["vendorId"]
-        # vendor_code = vendor_info["vendorCode"]
-        # currency = vendor_info["currency"]
+
+        now = datetime.now()
+        formatted_date = now.strftime("%Y-%m-%d")
         user_name = "admin"
         user_id = self.userid_get(user_name)
         payload = {
             "distinguish":0,
             "recptCode" : self.auto_buy_inventory_code(),
-            "recptDate":"2025-06-16 14:19:32",
+            "recptDate":formatted_date,
             "purchaseId":data_list["purchaseId"],
             # type代表不同类型的入库方式
             "type":"00",

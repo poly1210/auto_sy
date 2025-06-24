@@ -5,9 +5,8 @@ from baseApi.base_api import AllApi
 
 #MRP运算列表
 class MRPCalculation:
-    def __init__(self):
-        self.api = AllApi()
-        self.api.send_login("admin-api/config.yml")
+    def __init__(self, api):
+        self.api = api
 
     def auto_mrp_code(self):
         """获取MRP运算列表的自动编号"""
