@@ -12,9 +12,8 @@ from baseApi.base_api import AllApi
 class BuyOrderNew:
     business_id = None  # 类变量存储 businessId
 
-    def __init__(self):
-        self.api = AllApi()
-        self.api.send_login("admin-api/config.yml")
+    def __init__(self, api):
+        self.api = api
 
 
 

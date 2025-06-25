@@ -4,9 +4,9 @@ from baseApi.base_api import AllApi
 
 #采购到货单生成
 class BuyArrival:
-    def __init__(self):
-        self.api = AllApi()
-        self.api.send_login("admin-api/config.yml")
+
+    def __init__(self, api):
+        self.api = api
 
     def auto_buy_arrival_code(self):
         """获取到货订单的自动编号"""
@@ -39,23 +39,26 @@ class BuyArrival:
         data = response["rows"]
         return data
 
-    def buy_arrival_add(self, purchase_code):
+    def buy_arrival_add(self, purchase_code,warehouse_name):
         """采购管理-采购到货单-新增"""
         now = datetime.now()
         formatted_date = now.strftime("%Y-%m-%d")
         relative_url = "admin-api/mes/wm/receipts"
         list_data = self.buy_order_arrival_payload_list_get(purchase_code)
         # TODO 仓库要写成能配置
-        warehouse_info = self.warehouse_info_get("总仓库")
+        warehouse_info = self.warehouse_info_get(warehouse_name)
         receipts_code = self.auto_buy_arrival_code()
 
-        for item in list_data:
+        for index,item in enumerate(list_data,start=1):
             item["warehouseName"] = warehouse_info["warehouseName"]
             item["warehouseCode"] = warehouse_info["warehouseCode"]
             item["warehouseId"] = warehouse_info["warehouseId"]
             # TODO: 这里如果是一个订单下，多个物料，不同仓库，就要变
             item["warehouseInfo"] = [warehouse_info["warehouseId"]]
             item["receivedQuantity"] = item["notReceivedGoods"]
+            item["index"] = index
+            # 修改documentNumber值
+            item["documentNumber"] = index
             # item["warehouseNameZh"] = warehouse_info["warehouseNameZh"]
             if item.get("batchManagement", False):
                 item["batchCode"] = self.auto_buy_arrival_batch_code()

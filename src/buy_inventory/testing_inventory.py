@@ -6,9 +6,9 @@ from urllib.parse import quote
 #采购入库
 class BuyInventory:
 
-    def __init__(self, api):
-        self.api = api
-
+    def __init__(self):
+        self.api = AllApi()
+        self.api.send_login("admin-api/config.yml")
     def auto_buy_inventory_code(self):
         """获取采购入库订单的自动编号"""
         relative_url ="admin-api/system/autocode/get/ITEMRECPT_CODE"

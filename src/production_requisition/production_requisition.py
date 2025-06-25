@@ -8,9 +8,8 @@ from baseApi.base_api import AllApi
 class ProductionRequisition:
     business_id = None  # 类变量存储 businessId
 
-    def __init__(self):
-        self.api = AllApi()
-        self.api.send_login("admin-api/config.yml")
+    def __init__(self, api):
+        self.api = api
 
     def auto_production_requisition_code(self):
         """获取生产领料单的自动编号"""
@@ -20,7 +19,6 @@ class ProductionRequisition:
 
     def production_requisition_payload_list_get(self, code):
         """获取生产领料单负载的主体和列表部分"""
-        # purchaseTemplateId = self.buy_order_payload_get()
         relative_url = f"admin-api/mes/pro/workorderV1/select?pageNum=1&pageSize=50&workorderCode={code}&issueType=0&isReturn=false"
         response = self.api.send_get_direct(relative_url)
         data = response["data"]

@@ -67,9 +67,10 @@ class ReadBuyXlsx:
                 user_name = str(first["userName"])
                 purchase_code = str(first["purchaseCode"])
                 # 执行查询方法，填入必传的id字段
-                vendor_id = self.vendor_id_get(vendor_name)["vendorId"]
-                vendor_code = self.vendor_id_get(vendor_name)["vendorCode"]
-                currency = self.vendor_id_get(vendor_name)["currency"]
+                vendor_info = self.vendor_id_get(vendor_name)
+                vendor_id = vendor_info["vendorId"]
+                vendor_code = vendor_info["vendorCode"]
+                currency = vendor_info["currency"]
                 user_id = self.userid_get(user_name)
 
 

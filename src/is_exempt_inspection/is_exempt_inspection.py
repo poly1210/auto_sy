@@ -2,13 +2,13 @@ from baseApi.base_api import AllApi
 
 # 查看物料是否免检，决定采购订单下一步是直接入库，还是到货检验
 class IsExemptInspection:
-    def __init__(self):
-        self.api = AllApi()
-        self.api.send_login("admin-api/config.yml")
+
+    def __init__(self, api):
+        self.api = api
 
     def item_info_get(self, code) :
         """根据产品编号获取具体内容"""
-        url = f"admin-api/mes/md/mditem/select/page?pageNum=1&pageSize=10&isEnable=true&itemCode={code}&isSales=true"
+        url = f"admin-api/mes/md/mditem/page?pageNum=1&pageSize=10&itemCode={code}"
         res = self.api.send_get_direct(url)
         if res.get("code") == 200 and res["total"] > 0:
             return res["rows"][0]
@@ -23,7 +23,7 @@ class IsExemptInspection:
         for item in data:
             item_code = item["itemCode"]
             item_info = self.item_info_get(item_code)
-            is_exempt_inspection = item_info["isExempt"]
+            is_exempt_inspection = item_info["isExemptInspection"]
             if is_exempt_inspection == "Y" :
                 is_inspection = True
                 break

@@ -5,10 +5,8 @@ from baseApi.base_api import AllApi
 #采购检验单生成
 class BuyInspection:
 
-
-    def __init__(self):
-        self.api = AllApi()
-        self.api.send_login("admin-api/config.yml")
+    def __init__(self, api):
+        self.api = api
 
     def auto_buy_inspection_code(self):
         """获取采购订单的自动编号"""
@@ -40,12 +38,13 @@ class BuyInspection:
         receipts_code = code
         datas = self.buy_order_payload_get(receipts_code)
         inspection_codes = []
-        for item in datas:
+        for index,item in enumerate(datas,start = 1):
             main_data, purchase_template_id = item, item["purchaseTemplateId"]
             list_data = self.buy_order_payload_list_get(purchase_template_id)
             # TODO :质检人要配置
             inspection_code = self.auto_buy_inspection_code()
             inspection_codes.append(inspection_code)
+            item["documentNumber"] = index
             payload = {
                 "inspectionCode": inspection_code,
                 **main_data,

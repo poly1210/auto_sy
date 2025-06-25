@@ -22,6 +22,8 @@ from src.buy_inspection.buy_inspection import BuyInspection
 from  src.buy_inventory.buy_inventory import BuyInventory
 # 导入物料检验判断
 from src.is_exempt_inspection.is_exempt_inspection import IsExemptInspection
+# 导入生产领料
+from src.production_requisition.production_requisition import ProductionRequisition
 
 class Configuration:
     # 引入类实例
@@ -31,11 +33,12 @@ class Configuration:
         self.sale_order = SaleOrder(api)
         self.mrp_cal = MRPCalculation(api)
         self.reader_buy = ReadBuyXlsx()
-        self.buy_order_new = BuyOrderNew()
-        self.buy_arrival = BuyArrival()
-        self.buy_inspection = BuyInspection()
-        self.buy_inventory = BuyInventory()
-        self.is_exempt_inspection = IsExemptInspection()
+        self.buy_order_new = BuyOrderNew(api)
+        self.buy_arrival = BuyArrival(api)
+        self.buy_inspection = BuyInspection(api)
+        self.buy_inventory = BuyInventory(api)
+        self.is_exempt_inspection = IsExemptInspection(api)
+        self.production_requisition = ProductionRequisition(api)
 
 
     def run_one(self):
@@ -68,7 +71,7 @@ class Configuration:
             # 判断物料是否全要检验，如果全不免检，就要走到货再检验，否则直接走入库
             if not self.is_exempt_inspection.item_code_get(purchase_code) :
                 # 采购到货
-                business_id_arrival_order, arrival_code = self.buy_arrival.buy_arrival_add(purchase_code)
+                business_id_arrival_order, arrival_code = self.buy_arrival.buy_arrival_add(purchase_code,"总仓库")
                 # 审批
                 commit_payload_arrival_order = self.buy_arrival.commit_task_by_business_id(business_id_arrival_order)
                 self.buy_arrival.process_instance_cancel_flow(commit_payload_arrival_order)
@@ -85,12 +88,18 @@ class Configuration:
                 payload_commit_inventory_by_order = self.buy_inventory.commit_task_by_business_id(business_id_inventory_by_order)
                 self.buy_inventory.process_instance_cancel_flow( payload_commit_inventory_by_order)
 
-    # def run_three(self):
+    def run_three(self):
+        """生产领料-"""
+
+
+
+
+
 if __name__ == "__main__":
     api = AllApi()
     api.send_login("admin-api/config.yml")
     configuration = Configuration(api)
-    configuration.run_one()
+    configuration.run_two()
 
 
 
