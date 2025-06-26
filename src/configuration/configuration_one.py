@@ -24,6 +24,8 @@ from  src.buy_inventory.buy_inventory import BuyInventory
 from src.is_exempt_inspection.is_exempt_inspection import IsExemptInspection
 # 导入生产领料
 from src.production_requisition.production_requisition import ProductionRequisition
+# 导入工单投产
+from src.process_commission.process_commission import ProcessCommission
 
 class Configuration:
     # 引入类实例
@@ -39,6 +41,7 @@ class Configuration:
         self.buy_inventory = BuyInventory(api)
         self.is_exempt_inspection = IsExemptInspection(api)
         self.production_requisition = ProductionRequisition(api)
+        self.process_commission = ProcessCommission(api)
 
 
     def run_one(self):
@@ -88,8 +91,25 @@ class Configuration:
                 payload_commit_inventory_by_order = self.buy_inventory.commit_task_by_business_id(business_id_inventory_by_order)
                 self.buy_inventory.process_instance_cancel_flow( payload_commit_inventory_by_order)
 
-    def run_three(self):
+    def run_three(self,production_code):
         """生产领料-"""
+        # 分成两块（报工和不报工的），先是有工序报工的
+        if self.production_requisition.has_report(production_code):
+            # 工单投产
+            self.process_commission.process_commission(production_code)
+
+
+
+        # 不报工，生产领料新增并审批
+        else:
+            business_id_production_requisition = self.production_requisition.production_requisition_add(production_code)
+            payload_commit_production_requisition = self.production_requisition.commit_task_by_business_id(business_id_production_requisition)
+            self.production_requisition.process_instance_cancel_flow(payload_commit_production_requisition)
+            # 产品免检的话直接入库
+            if True :
+
+
+
 
 
 

@@ -17,6 +17,13 @@ class ProductionRequisition:
         issue_code = self.api.send_get_direct(relative_url)
         return issue_code
 
+    def has_report(self, production_code):
+        """判断生产工单是否报工"""
+        relative_url = f"admin-api/mes/pro/workorderV1/list?pageNum=1&pageSize=10&workorderCode={production_code}"
+        response = self.api.send_get_direct(relative_url)
+        data = response["rows"][0]
+        return data["report"]
+
     def production_requisition_payload_list_get(self, code):
         """获取生产领料单负载的主体和列表部分"""
         relative_url = f"admin-api/mes/pro/workorderV1/select?pageNum=1&pageSize=50&workorderCode={code}&issueType=0&isReturn=false"
@@ -36,17 +43,17 @@ class ProductionRequisition:
         warehouse_info = response["rows"][0]  # 取第一个匹配结果
         return warehouse_info
 
-    def production_requisition_add(self):
+    def production_requisition_add(self,production_code):
         """生产管理-生产领料"""
         relative_url = "admin-api/mes/wm/issueheader"
-        data_main, data_list = self.production_requisition_payload_list_get("MO202506190002")
+        data_main, data_list = self.production_requisition_payload_list_get(production_code)
 
         # 获取当前时间并格式化
         current_time = datetime.now()
         formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
 
         # 获取仓库信息（例如“总仓库”）
-        warehouse_info = self.warehouse_info_get("总仓库")  # 可以改为参数传入不同仓库名
+        # warehouse_info = self.warehouse_info_get(warehouse_name)  # 可以改为参数传入不同仓库名
 
         # 处理 list 数据，添加 issueQuantity 和仓库信息
         updated_data_list = []
@@ -56,11 +63,11 @@ class ProductionRequisition:
             new_item["quantityIssued"] = item.get("unpickedQuantity")
             new_item["index"] = index
             # 添加仓库信息
-            new_item.update({
-                "warehouseId": warehouse_info["warehouseId"],
-                "warehouseName": warehouse_info["warehouseName"],
-                "warehouseCode": warehouse_info["warehouseCode"]
-            })
+            # new_item.update({
+            #     "warehouseId": warehouse_info["warehouseId"],
+            #     "warehouseName": warehouse_info["warehouseName"],
+            #     "warehouseCode": warehouse_info["warehouseCode"]
+            # })
             updated_data_list.append(new_item)
 
         # 构建 payload
