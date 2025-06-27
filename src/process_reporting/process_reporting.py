@@ -4,10 +4,8 @@ from urllib.parse import quote
 
 #工序报工
 class ProcessReporting:
-
-    def __init__(self):
-        self.api = AllApi()
-        self.api.send_login("admin-api/config.yml")
+    def __init__(self, api):
+        self.api = api
 
     # 查询之后，返回报工id和feedbackQuantity（报工数量）
     def process_reporting_payload_get(self, code):
@@ -30,10 +28,10 @@ class ProcessReporting:
         worker_info = response["rows"][0]  # 取第一个匹配结果
         return worker_info["userId"],worker_info["userName"]
 
-    def process_reporting_add(self):
+    def process_reporting_add(self,production_code,staff):
         """生产管理-工序报工-新增"""
-        payload_id,payload_feedback_quantity = self.process_reporting_payload_get("MO202506060009")
-        staff_id , staff_name = self.worker_info_get("admin")
+        payload_id,payload_feedback_quantity = self.process_reporting_payload_get(production_code)
+        staff_id , staff_name = self.worker_info_get("staff")
         payload = [
             {
                 # "actualHour": "5",

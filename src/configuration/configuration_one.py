@@ -26,6 +26,14 @@ from src.is_exempt_inspection.is_exempt_inspection import IsExemptInspection
 from src.production_requisition.production_requisition import ProductionRequisition
 # 导入工单投产
 from src.process_commission.process_commission import ProcessCommission
+# 导入工序派工
+from src.process_dispatch.process_dispatch import ProcessDispatch
+# 导入生产领料
+from src.production_requisition.production_requisition import ProductionRequisition
+# 导入工序上线
+from src.process_online.process_online import ProcessOnline
+# 导入工序报工
+from src.process_reporting.process_reporting import ProcessReporting
 
 class Configuration:
     # 引入类实例
@@ -42,6 +50,10 @@ class Configuration:
         self.is_exempt_inspection = IsExemptInspection(api)
         self.production_requisition = ProductionRequisition(api)
         self.process_commission = ProcessCommission(api)
+        self.process_dispatch = ProcessDispatch(api)
+        self.production_requisition = ProductionRequisition(api)
+        self.process_online = ProcessOnline(api)
+        self.process_reporting = ProcessReporting(api)
 
 
     def run_one(self):
@@ -91,12 +103,26 @@ class Configuration:
                 payload_commit_inventory_by_order = self.buy_inventory.commit_task_by_business_id(business_id_inventory_by_order)
                 self.buy_inventory.process_instance_cancel_flow( payload_commit_inventory_by_order)
 
-    def run_three(self,production_code):
+    # worker是车间派工的工作人
+    def run_three(self,production_code,worker):
         """生产领料-"""
         # 分成两块（报工和不报工的），先是有工序报工的
         if self.production_requisition.has_report(production_code):
             # 工单投产
             self.process_commission.process_commission(production_code)
+            # 如果是车间派工的，就工序派工
+            if True :
+                self.process_dispatch.process_dispatch_add(production_code,worker)
+                #生产领料
+                self.production_requisition.production_requisition_add(production_code)
+                #工序上线
+                self.process_online.process_online(production_code)
+                #工单投产
+                self.process_reporting.process_reporting_add()
+
+
+
+
 
 
 

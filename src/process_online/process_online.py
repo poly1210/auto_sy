@@ -1,12 +1,10 @@
 from baseApi.base_api import AllApi
 
 #工序上线
-class ProcessOnline():
-    business_id = None  # 类变量存储 businessId
+class ProcessOnline:
+    def __init__(self, api):
+        self.api = api
 
-    def __init__(self):
-        self.api = AllApi()
-        self.api.send_login("admin-api/config.yml")
 
     def process_online_payload_get(self, code):
         """根据订单编号，获取负载"""
@@ -17,10 +15,10 @@ class ProcessOnline():
         return data["id"], data["onlineQuantity"]
 
 
-    def process_online(self):
+    def process_online(self,production_code):
         """工序上线"""
         relative_url = "admin-api/pro/online/batch"
-        payload_id,online_quantity=self.process_online_payload_get("MO202506060009")
+        payload_id,online_quantity=self.process_online_payload_get(production_code)
         payload = [{
             "id":payload_id,
             "onlineQuantity" : online_quantity ,
