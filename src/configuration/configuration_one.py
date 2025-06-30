@@ -27,13 +27,19 @@ from src.production_requisition.production_requisition import ProductionRequisit
 # 导入工单投产
 from src.process_commission.process_commission import ProcessCommission
 # 导入工序派工
-from src.process_dispatch.process_dispatch import ProcessDispatch
-# 导入生产领料
-from src.production_requisition.production_requisition import ProductionRequisition
+from src.process_dispatch.process_dispatch_old import ProcessDispatch
 # 导入工序上线
 from src.process_online.process_online import ProcessOnline
 # 导入工序报工
 from src.process_reporting.process_reporting import ProcessReporting
+# 导入工序检验
+from src.process_inspection.process_inspection import ProcessInspection
+# 导入工序转移
+from src.process_transfer.pocess_transfer import ProcessTransfer
+# 导入工序入库
+from src.process_inventory.process_inventory import ProcessInventory
+# 导入产品入库
+from src.production_inventory.production_inventory import ProductionInventory
 
 class Configuration:
     # 引入类实例
@@ -54,6 +60,10 @@ class Configuration:
         self.production_requisition = ProductionRequisition(api)
         self.process_online = ProcessOnline(api)
         self.process_reporting = ProcessReporting(api)
+        self.process_inspection = ProcessInspection(api)
+        self.process_transfer = ProcessTransfer(api)
+        self.process_inventory = ProcessInventory
+        self.production_inventory = ProductionInventory()
 
 
     def run_one(self):
@@ -104,27 +114,44 @@ class Configuration:
                 self.buy_inventory.process_instance_cancel_flow( payload_commit_inventory_by_order)
 
     # worker是车间派工的工作人
-    def run_three(self,production_code,worker):
-        """生产领料-"""
+    def run_three(self,production_code):
+        """生产管理和生产管理——工序的全流程综合"""
         # 分成两块（报工和不报工的），先是有工序报工的
         if self.production_requisition.has_report(production_code):
             # 工单投产
             self.process_commission.process_commission(production_code)
-            # 如果是车间派工的，就工序派工
-            if True :
-                self.process_dispatch.process_dispatch_add(production_code,worker)
-                #生产领料
-                self.production_requisition.production_requisition_add(production_code)
-                #工序上线
-                self.process_online.process_online(production_code)
-                #工单投产
-                self.process_reporting.process_reporting_add()
+            # 只要不是末工序就一直在流程中流转
+            is_end_precess = True
+            # 获取产品编号
+            item_codes = self.process_commission.item_codes_get(production_code)
+            for item_code in item_codes:
+                while is_end_precess:
+                    # 如果是车间派工的，就工序派工
+                    # TODO 这里要再写判断逻辑，是看有没有这个部门存在
+                    if True :
+                        # 工序派工
+                        self.process_dispatch.process_dispatch_add(production_code,item_code)
+                        #生产领料
+                        # self.production_requisition.production_requisition_add(production_code)
+                        #工序上线
+                        self.process_online.process_online(production_code)
+                        #工序报工,并获取工序号
+                        process_code =self.process_reporting.process_reporting_add(production_code)
+                        #看是否需要检验,写不免检的流程
+                        if not self.process_reporting.has_process_inspection(process_code):
+                            self.process_inspection.process_inspection_add(production_code)
 
 
-
-
-
-
+                        #判断是否末工序，就看工单投产搜单号能不能返回结果
+                        if self.process_commission.process_commission_info_get(production_code) == []:
+                            is_end_precess = False
+                            # 如果是末工序就工序入库
+                            self.process_inventory.process_inventory_add(production_code)
+                            # 产品入库todo 这里要在思考下
+                            # self.production_inventory.production_inventory_add(production_code)
+                        # 工序转移
+                        else :
+                            self.process_transfer.process_transfer(production_code)
 
         # 不报工，生产领料新增并审批
         else:

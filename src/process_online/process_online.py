@@ -11,18 +11,20 @@ class ProcessOnline:
         # purchaseTemplateId = self.buy_order_payload_get()
         relative_url = f"admin-api/pro/online/list?pageNum=1&pageSize=10&workorderCode={code}"
         response = self.api.send_get_direct(relative_url)
-        data = response["rows"][0]
-        return data["id"], data["onlineQuantity"]
+        data = response["rows"]
+        return data
 
 
     def process_online(self,production_code):
         """工序上线"""
         relative_url = "admin-api/pro/online/batch"
-        payload_id,online_quantity=self.process_online_payload_get(production_code)
-        payload = [{
-            "id":payload_id,
-            "onlineQuantity" : online_quantity ,
-        }]
+        payload = []
+        for item in self.process_online_payload_get(production_code):
+            payload_id,online_quantity = item["id"], item["onlineQuantity"]
+            payload.append({
+                "id":payload_id,
+                "onlineQuantity" : online_quantity ,
+            })
         print(payload)
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)
@@ -38,10 +40,4 @@ class ProcessOnline:
 
 
 
-# 使用示例
-if __name__ == "__main__":
-    # 创建 SaleOrder 实例
-    pol = ProcessOnline()
-    # 调用 采购订单新增，查询订单，审核订单 方法
-    code = pol.process_online()
-    print(f"审批返回状态码：{code}")
+
