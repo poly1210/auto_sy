@@ -40,6 +40,10 @@ from src.process_transfer.pocess_transfer import ProcessTransfer
 from src.process_inventory.process_inventory import ProcessInventory
 # 导入产品入库
 from src.production_inventory.production_inventory import ProductionInventory
+# 导入产品送检
+from src.production_submission.production_submission import ProductionSubmission
+# 导入生产检验
+from src.production_inspection.production_inspection import ProductionInspection
 
 class Configuration:
     # 引入类实例
@@ -63,7 +67,9 @@ class Configuration:
         self.process_inspection = ProcessInspection(api)
         self.process_transfer = ProcessTransfer(api)
         self.process_inventory = ProcessInventory
-        self.production_inventory = ProductionInventory()
+        self.production_inventory = ProductionInventory(api)
+        self.production_submission = ProductionSubmission(api)
+        self.production_inspection = ProductionInspection(api)
 
 
     def run_one(self):
@@ -128,38 +134,54 @@ class Configuration:
                 while is_end_precess:
                     # 如果是车间派工的，就工序派工
                     # TODO 这里要再写判断逻辑，是看有没有这个部门存在
-                    if True :
-                        # 工序派工
-                        self.process_dispatch.process_dispatch_add(production_code,item_code)
-                        #生产领料
-                        # self.production_requisition.production_requisition_add(production_code)
-                        #工序上线
-                        self.process_online.process_online(production_code)
-                        #工序报工,并获取工序号
-                        process_code =self.process_reporting.process_reporting_add(production_code)
-                        #看是否需要检验,写不免检的流程
-                        if not self.process_reporting.has_process_inspection(process_code):
-                            self.process_inspection.process_inspection_add(production_code)
+                    # if True :
+                    # 工序派工
+                    self.process_dispatch.process_dispatch_add(production_code,item_code)
+                    #生产领料
+                    # self.production_requisition.production_requisition_add(production_code)
+                    #工序上线
+                    self.process_online.process_online(production_code)
+                    #工序报工,并获取工序号
+                    process_code =self.process_reporting.process_reporting_add(production_code)
+                    #看是否需要检验,写不免检的流程
+                    if not self.process_reporting.has_process_inspection(process_code):
+                        self.process_inspection.process_inspection_add(production_code)
 
 
-                        #判断是否末工序，就看工单投产搜单号能不能返回结果
-                        if self.process_commission.process_commission_info_get(production_code) == []:
-                            is_end_precess = False
-                            # 如果是末工序就工序入库
-                            self.process_inventory.process_inventory_add(production_code)
-                            # 产品入库todo 这里要在思考下
-                            # self.production_inventory.production_inventory_add(production_code)
-                        # 工序转移
-                        else :
-                            self.process_transfer.process_transfer(production_code)
+                    #判断是否末工序，就看工单投产搜单号能不能返回结果
+                    if self.process_commission.process_commission_info_get(production_code) == []:
+                        is_end_precess = False
+                        # 如果是末工序就工序入库
+                        self.process_inventory.process_inventory_add(production_code)
+                        # 产品入库todo 这里要在思考下
+                        # self.production_inventory.production_inventory_add(production_code)
+                    # 工序转移
+                    else :
+                        self.process_transfer.process_transfer(production_code)
+
+
+
+
+
+
+
+
+
+
 
         # 不报工，生产领料新增并审批
         else:
             business_id_production_requisition = self.production_requisition.production_requisition_add(production_code)
             payload_commit_production_requisition = self.production_requisition.commit_task_by_business_id(business_id_production_requisition)
             self.production_requisition.process_instance_cancel_flow(payload_commit_production_requisition)
-            # 产品免检的话直接入库
-            if True :
+            # 产品不免检
+            if  True:
+                # 产品送检
+                submission_code = self.production_submission.production_submission_add(production_code)
+                # 生产检验
+                self.production_inspection. production_inspection_add(submission_code)
+                #生产检验单的产品入库
+
 
 
 

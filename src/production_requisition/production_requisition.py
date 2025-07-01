@@ -31,22 +31,22 @@ class ProductionRequisition:
         data = response["data"]
         return data["father"][0],data["children"]
 
-    def warehouse_info_get(self, name):
-        """根据仓库名称查询仓库信息，返回完整仓库对象"""
-        name = quote(name)
-        relative_url = f"admin-api/mes/wm/warehouse/list?pageNum=1&pageSize=10&warehouseName={name}"
-        response = self.api.send_get_direct(relative_url)
-
-        if not response.get("rows"):
-            raise ValueError(f"未找到名为 {name} 的仓库，请确认仓库是否存在")
-
-        warehouse_info = response["rows"][0]  # 取第一个匹配结果
-        return warehouse_info
+    # def warehouse_info_get(self, name):
+    #     """根据仓库名称查询仓库信息，返回完整仓库对象"""
+    #     name = quote(name)
+    #     relative_url = f"admin-api/mes/wm/warehouse/list?pageNum=1&pageSize=10&warehouseName={name}"
+    #     response = self.api.send_get_direct(relative_url)
+    #
+    #     if not response.get("rows"):
+    #         raise ValueError(f"未找到名为 {name} 的仓库，请确认仓库是否存在")
+    #
+    #     warehouse_info = response["rows"][0]  # 取第一个匹配结果
+    #     return warehouse_info
 
     def production_requisition_add(self,production_code):
         """生产管理-生产领料"""
         relative_url = "admin-api/mes/wm/issueheader"
-        data_main, data_list = self.production_requisition_payload_list_get(production_code)
+        data_main,data_list = self.production_requisition_payload_list_get(production_code)
 
         # 获取当前时间并格式化
         current_time = datetime.now()
@@ -62,6 +62,11 @@ class ProductionRequisition:
             # 添加领料数量
             new_item["quantityIssued"] = item.get("unpickedQuantity")
             new_item["index"] = index
+            item_spec = new_item["itemSpec"]
+            item_spec_code = quote(item_spec)
+            item_code = new_item["itemCode"]
+            if new_item["batchManagement"]:
+                new_item["batchCode"] = self.batch_code_choose(item_code,item_spec_code)
             # 添加仓库信息
             # new_item.update({
             #     "warehouseId": warehouse_info["warehouseId"],
@@ -74,12 +79,13 @@ class ProductionRequisition:
         payload = {
             "issueCode": self.auto_production_requisition_code(),
             "issueDate": formatted_time,
-            **data_main,
+            "userDeptName":data_main["userDeptName"],
             "issueType": "生产领料",
-            "status": 0,
+            "status": "0",
+            "deptList": data_main["deptList"],
             "list": updated_data_list,  # 使用更新后的列表
         }
-
+        print(payload)
         # 发送请求
         response = self.api.send_post_direct(relative_url, payload)
         print("新增领料单响应:", response)
@@ -125,13 +131,22 @@ class ProductionRequisition:
         response  = self.api.send_post_direct(relative_url, payload)
         return response["code"]
 
+    def batch_code_choose(self, item_code, item_spec):
+        """按先进先出原则选择批次号"""
+        relative_url = f"admin-api/mes/wm/wmstock/list?pageNum=1&pageSize=10&itemCode={item_code}&isSelect=true&itemSpec={item_spec}"
+        response = self.api.send_get_direct(relative_url)
+
+        if not response.get("rows"):
+            raise ValueError(f"未找到物料 {item_code} 规格 {item_spec} 的库存批次，请确认是否已存在可用库存")
+
+        batch_code = response["rows"][0]["batchCode"]
+        return batch_code
+
 # 使用示例
 if __name__ == "__main__":
-    # 创建 SaleOut 实例
+    # 创建实例
     production_requisition_instance = ProductionRequisition()
-
-    # 调用 订单新增，查询订单，审核订单 方法
-    business_id = production_requisition_instance.production_requisition_add()
+    business_id = production_requisition_instance.production_requisition_add("MO202507010007")
     payload = production_requisition_instance.commit_task_by_business_id(business_id)
     response_code = production_requisition_instance.process_instance_cancel_flow(payload)
     print(f"审批返回状态码：{response_code}")
