@@ -42,6 +42,7 @@ class ProcessInventory:
         new_item = item.copy()
         if new_item.get("batchManagement", False):
             new_item["batchCode"] = self.auto_process_inventory_code()
+        new_item["inboundQuantity"] = new_item["quantity"]
         # new_item.update({
         #     "warehouseId": warehouse_info["warehouseId"],
         #     "warehouseName": warehouse_info["warehouseName"],

@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 from baseApi.base_api import AllApi
 
@@ -27,7 +28,7 @@ from src.production_requisition.production_requisition import ProductionRequisit
 # 导入工单投产
 from src.process_commission.process_commission import ProcessCommission
 # 导入工序派工
-from src.process_dispatch.process_dispatch_old import ProcessDispatch
+from src.process_dispatch.process_dispatch import ProcessDispatch
 # 导入工序上线
 from src.process_online.process_online import ProcessOnline
 # 导入工序报工
@@ -66,7 +67,7 @@ class Configuration:
         self.process_reporting = ProcessReporting(api)
         self.process_inspection = ProcessInspection(api)
         self.process_transfer = ProcessTransfer(api)
-        self.process_inventory = ProcessInventory
+        self.process_inventory = ProcessInventory(api)
         self.production_inventory = ProductionInventory(api)
         self.production_submission = ProductionSubmission(api)
         self.production_inspection = ProductionInspection(api)
@@ -124,12 +125,16 @@ class Configuration:
         """生产管理和生产管理——工序的全流程综合"""
         # 分成两块（报工和不报工的），先是有工序报工的
         if self.production_requisition.has_report(production_code):
-            # 工单投产
-            self.process_commission.process_commission(production_code)
+            # 工单投产并获取产品编号
+            item_codes = self.process_commission.process_commission(production_code)
             # 只要不是末工序就一直在流程中流转
             is_end_precess = True
-            # 获取产品编号
-            item_codes = self.process_commission.item_codes_get(production_code)
+            # time.sleep(5)  # 等待2秒让数据写入
+            # 判断是否成功获取产品编号
+            if not item_codes:
+                print("未找到任何 item_code，流程结束")
+                return
+            print("item_codes:", item_codes)  # 看看是不是 []
             for item_code in item_codes:
                 while is_end_precess:
                     # 如果是车间派工的，就工序派工
@@ -149,52 +154,39 @@ class Configuration:
 
 
                     #判断是否末工序，就看工单投产搜单号能不能返回结果
-                    if self.process_commission.process_commission_info_get(production_code) == []:
+                    if not self.process_commission.is_last_process(production_code,item_code):
                         is_end_precess = False
                         # 如果是末工序就工序入库
                         self.process_inventory.process_inventory_add(production_code)
                         # 产品入库todo 这里要在思考下
-                        # self.production_inventory.production_inventory_add(production_code)
+                        self.production_inventory.production_inventory_add_by_production(production_code)
                     # 工序转移
                     else :
                         self.process_transfer.process_transfer(production_code)
-
-
-
-
-
-
-
-
-
-
-
+                        # 等待两秒让数据库写上数据
+                        time.sleep(2)
         # 不报工，生产领料新增并审批
         else:
             business_id_production_requisition = self.production_requisition.production_requisition_add(production_code)
             payload_commit_production_requisition = self.production_requisition.commit_task_by_business_id(business_id_production_requisition)
             self.production_requisition.process_instance_cancel_flow(payload_commit_production_requisition)
             # 产品不免检
-            if  True:
+            if  not self.production_requisition.item_code_get_by_product_code(production_code):
                 # 产品送检
                 submission_code = self.production_submission.production_submission_add(production_code)
                 # 生产检验
-                self.production_inspection. production_inspection_add(submission_code)
+                inspection_codes = self.production_inspection. production_inspection_add(submission_code)
                 #生产检验单的产品入库
-
-
-
-
-
-
-
-
+                for code in inspection_codes:
+                    self.production_inventory.production_inventory_add_by_inspection(code)
+            # 免检的直接入库
+            self.production_inventory.production_inventory_add_by_production(production_code)
 
 if __name__ == "__main__":
     api = AllApi()
     api.send_login("admin-api/config.yml")
     configuration = Configuration(api)
-    configuration.run_two()
+    configuration.run_three("MO202507020014")
 
 
 

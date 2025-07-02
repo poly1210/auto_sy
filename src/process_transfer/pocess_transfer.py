@@ -1,6 +1,6 @@
 from baseApi.base_api import AllApi
 
-#工序转移
+#工序批量转移
 class ProcessTransfer:
     def __init__(self, api):
         self.api = api
@@ -10,14 +10,19 @@ class ProcessTransfer:
         """根据订单编号，获取负载"""
         relative_url = f"admin-api/pro/protransfer/selectListByProWorkorderTransfer?pageNum=1&pageSize=10&workorderCode={production_code}"
         response = self.api.send_get_direct(relative_url)
-        data = response["rows"]
+        data = response["rows"][0]
         return data
 
 
     def process_transfer(self,production_code):
         """工序转移"""
         relative_url = "admin-api/pro/protransfer/batchTransfer"
-        payload = self.process_transfer_payload_get(production_code)
+        data_list = self.process_transfer_payload_get(production_code)
+        data_list["transferQuantity"] = data_list["quantity"]
+        payload = {
+            "isAutoPass" : True,
+            "list":[data_list]
+        }
         print(payload)
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)

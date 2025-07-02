@@ -54,22 +54,7 @@ class ProcessDispatch:
         """生产管理-工序批量派工-自动审核"""
         relative_url = "admin-api/mes/pro/dispatch/batchReport/true"
         data_lists = self.process_dispatch_payload_list_get(production_code)
-        # # 获取当前时间并格式化
-        # current_time = datetime.now()
-        # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
-        # staff_options = []
-        # for user in self.worker_payload():
-        #     # 提取userId和userName字段，添加到结果列表
-        #     # 注意这里传的是nickName
-        #     user_id = user.get("userId")
-        #     user_name = user.get("nickName")
-        #
-        #     # 确保userId和userName存在
-        #     if user_id is not None and user_name is not None:
-        #         staff_options.append({
-        #             "userId": user_id,
-        #             "userName": user_name
-        #         })
+
 
         # 处理 list 数据
         for item in data_lists:

@@ -92,8 +92,18 @@ class ProcessInspection:
 
         # 保存 businessId
         business_id = response["data"]["businessId"]
+        flow_ins_id, task_id = self.process_inspection_get(business_id)
+        payload_commit = {
+            "taskid": task_id,
+            "insid": flow_ins_id,
+            "businessId": business_id,
+            "comment": "",
+            "operateType": "0",
+            "billType": "qc_process_inspection",
+        }
+        self.process_instance_cancel_flow(payload_commit)
 
-        return business_id
+
 
     def process_inspection_get(self, business_id):
         """销售订单 - 查询详情，返回 insid 和 taskid"""
@@ -109,20 +119,7 @@ class ProcessInspection:
         data = response["data"]
         return data["flowInsId"], data["taskId"]
 
-    def commit_task_by_business_id(self, business_id):
-        """封装好payload数据"""
-        insid, taskid = self.process_inspection_get(business_id)
 
-
-        payload = {
-            "taskid": taskid,
-            "insid": insid,
-            "businessId": business_id,
-            "comment": "",
-            "operateType": "0",
-            "billType": "qc_process_inspection",
-        }
-        return  payload
 
     def process_instance_cancel_flow(self,payload):
         """销售管理-销售订单明细--批量审批"""

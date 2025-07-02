@@ -7,7 +7,7 @@ class ProcessReporting:
     def __init__(self, api):
         self.api = api
 
-    # 查询之后
+
     def process_reporting_payload_get(self, code):
         """根据订单编号，获取负载"""
         # purchaseTemplateId = self.buy_order_payload_get()

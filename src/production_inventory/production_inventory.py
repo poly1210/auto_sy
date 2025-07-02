@@ -6,9 +6,8 @@ from baseApi.base_api import AllApi
 class ProductionInventory:
     business_id = None  # 类变量存储 businessId
 
-    def __init__(self):
-        self.api = AllApi()
-        self.api.send_login("admin-api/config.yml")
+    def __init__(self, api):
+        self.api = api
 
     def auto_production_inventory_batch_code(self):
         """获取批次号"""
@@ -54,7 +53,7 @@ class ProductionInventory:
             new_item["productId"] = item["itemId"]
             new_item["productCode"] = item["itemCode"]
             new_item["productName"] = item["itemName"]
-            new_item["productSpec"] = item["itemSpec"]
+            new_item["productSpc"] = item["itemSpec"]
             updated_data_list.append(new_item)
 
         payload = {
@@ -103,8 +102,10 @@ class ProductionInventory:
         item["productId"] = item["itemId"]
         item["productCode"] = item["itemCode"]
         item["productName"] = item["itemName"]
-        item["productSpec"] = item["itemSpec"]
+        # 这里一个是spec，一个是spc，贼坑
+        item["productSpc"] = item["itemSpec"]
         item["workorderId"] = item["documentId"]
+        item["workorderBomId"] = item["documentLineId"]
 
         item["isAuto"] = True
 
@@ -170,4 +171,4 @@ class ProductionInventory:
 if __name__ == "__main__":
     # 创建 类 实例
     piv = ProductionInventory()
-    piv.production_inventory_add_by_inspection("SCPI202506180001")
+    piv.production_inventory_add_by_production("MO202505220007")

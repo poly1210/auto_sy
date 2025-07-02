@@ -11,6 +11,31 @@ class ProductionRequisition:
     def __init__(self, api):
         self.api = api
 
+    def item_info_get(self, code) :
+        """根据产品编号获取具体内容"""
+        url = f"admin-api/mes/md/mditem/page?pageNum=1&pageSize=10&itemCode={code}"
+        res = self.api.send_get_direct(url)
+        if res.get("code") == 200 and res["total"] > 0:
+            return res["rows"][0]
+        raise ValueError(f"未找到产品编号：{code}")
+
+    def item_code_get_by_product_code(self, product_code):
+        """根据生产工单号查询物料编码,并判断是否需要检验"""
+        relative_url = f"admin-api/mes/pro/workorderV1/list?pageNum=1&pageSize=10&workorderCode={product_code}"
+        response = self.api.send_get_direct(relative_url)
+        data = response["rows"][0]["list"]
+        is_inspection = False
+        for item in data:
+            item_code = item["itemCode"]
+            item_info = self.item_info_get(item_code)
+            is_exempt_inspection = item_info["isExemptInspection"]
+            if is_exempt_inspection == "Y" :
+                is_inspection = True
+                break
+        return is_inspection
+
+
+
     def auto_production_requisition_code(self):
         """获取生产领料单的自动编号"""
         relative_url ="admin-api/system/autocode/get/ISSUE_CODE"

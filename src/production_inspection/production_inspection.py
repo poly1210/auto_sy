@@ -49,9 +49,11 @@ class ProductionInspection:
         current_time = datetime.now()
         formatted_time = current_time.strftime("%Y-%m-%d  %H:%M:%S")
         user_id,user_name = self.worker_info_get()
+        inspection_codes = []
 
         for item in data_mains:
             inspection_code = self.auto_production_inspection_code()
+            inspection_codes.append(inspection_code)
             template_id = item["productionTemplateId"]
             data_list = self.production_inspection_payload_list_get(template_id)
             item["damagedQuantity"] = 0
@@ -104,6 +106,7 @@ class ProductionInspection:
                 "billType": "inspection_production"
             }
             self.process_instance_cancel_flow(payload_commit)
+        return inspection_codes
 
 
 

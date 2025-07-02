@@ -20,7 +20,7 @@ class ProcessOnline:
         relative_url = "admin-api/pro/online/batch"
         payload = []
         for item in self.process_online_payload_get(production_code):
-            payload_id,online_quantity = item["id"], item["onlineQuantity"]
+            payload_id,online_quantity = item["id"], item["quantity"]
             payload.append({
                 "id":payload_id,
                 "onlineQuantity" : online_quantity ,
