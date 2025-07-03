@@ -83,10 +83,10 @@ class BuyArrival:
         response = self.api.send_post_direct(relative_url, payload)
 
         # 打印日志调试
-        print("新增检验单响应:", response)
+        print("新增到货单响应:", response)
 
         # 断言接口成功
-        assert response["code"] == 200, f"新增检验单失败，返回：{response}"
+        assert response["code"] == 200, f"新增到货单失败，返回：{response}"
 
         # 保存 businessId
         business_id = response["data"]["businessId"]

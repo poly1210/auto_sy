@@ -54,3 +54,5 @@ class ProcessDispatch:
         # 发送请求
         response = self.api.send_post_direct(relative_url, payload)
         print("新增工序派工响应:", response)
+        assert response["code"] == 200, f"新增工序派工失败，返回：{response}"
+

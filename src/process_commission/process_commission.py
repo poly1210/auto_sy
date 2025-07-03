@@ -43,6 +43,8 @@ class ProcessCommission:
         relative_url = "admin-api/mes/pro/info/production/false"
         response = self.api.send_post_direct(relative_url, payload)
         print(response)
+        assert response["code"] == 200, f"新增工单投产失败，返回：{response}"
+
         return item_codes
 
 # if __name__ == "__main__":

@@ -59,6 +59,14 @@ class MRPCalculation:
         relative_url = "admin-api/mrp/calculation/execute"
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)
+        # 判断接口是否调用成功
+        assert response["code"] == 200, f"MRP计算接口调用失败: {response}"
+
+        data = response.get("data", {})
+        error_list = data.get("error", [])
+
+        # 判断是否响应为200，但是有业务错误
+        assert not error_list, f"MRP计算发现业务错误: {error_list}"
         key = response["data"]["key"]
         return key
 
@@ -69,6 +77,7 @@ class MRPCalculation:
         relative_url = "admin-api/mrp/calculation"
         response = self.api.send_post_format_direct(relative_url, data)
         return response
+
 
 
 # 使用示例

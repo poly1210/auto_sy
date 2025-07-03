@@ -53,6 +53,7 @@ class BuyInventory:
         return warehouse_info
 
 
+
     def buy_inventory_add_by_order(self,sales_code,warehouse_name):
         """采购管理-采购入库-新增-采购订单"""
         relative_url = "admin-api/mes/wm/itemrecpt"
@@ -71,7 +72,7 @@ class BuyInventory:
             new_item["warehouseCode"] = warehouse_info["warehouseCode"]
             new_item["warehouseId"] = warehouse_info["warehouseId"]
             new_item["quantityRecived"] = item["itemNum"]
-            if new_item["batchManagement"] == "true":
+            if new_item["batchManagement"] is True and not new_item.get("batchCode"):
                 new_item["batchCode"] = self.auto_batch_code()
             updated_data_list.append(new_item)
         payload = {
@@ -89,10 +90,10 @@ class BuyInventory:
         response = self.api.send_post_direct(relative_url, payload)
 
         # 打印日志调试
-        print("新增订单响应:", response)
+        print("不检验订单的新增采购入库响应:", response)
 
         # 断言接口成功
-        assert response["code"] == 200, f"新增订单失败，返回：{response}"
+        assert response["code"] == 200, f"不检验订单的新增采购入库失败，返回：{response}"
 
         # 保存 businessId
         business_id = response["data"]["businessId"]
@@ -137,10 +138,10 @@ class BuyInventory:
         response = self.api.send_post_direct(relative_url, payload)
 
         # 打印日志调试
-        print("新增订单响应:", response)
+        print("检验订单的新增订单响应:", response)
 
         # 断言接口成功
-        assert response["code"] == 200, f"新增订单失败，返回：{response}"
+        assert response["code"] == 200, f"检验订单的新增订单失败，返回：{response}"
 
         # 保存 businessId
         business_id = response["data"]["businessId"]

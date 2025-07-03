@@ -45,6 +45,7 @@ class BuyInspection:
             inspection_code = self.auto_buy_inspection_code()
             inspection_codes.append(inspection_code)
             item["documentNumber"] = index
+            item["qualifiedQuantity"] = item["receivedQuantity"]
             payload = {
                 "inspectionCode": inspection_code,
                 **main_data,

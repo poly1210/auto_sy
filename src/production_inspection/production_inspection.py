@@ -89,10 +89,10 @@ class ProductionInspection:
             response = self.api.send_post_direct(relative_url, payload)
 
             # 打印日志调试
-            print("新增生产检验响应:", response)
+            print("新增生产检验单响应:", response)
 
             # 断言接口成功
-            assert response["code"] == 200, f"生产检验失败，返回：{response}"
+            assert response["code"] == 200, f"生产检验单新增失败，返回：{response}"
 
             # 保存 businessId
             business_id = response["data"]["businessId"]

@@ -9,11 +9,11 @@ class ProductionInventory:
     def __init__(self, api):
         self.api = api
 
-    def auto_production_inventory_batch_code(self):
-        """获取批次号"""
-        relative_url ="admin-api/system/autocode/get/BATCH_CODE"
-        inventory_batch_code = self.api.send_get_direct(relative_url)
-        return inventory_batch_code
+    # def auto_production_inventory_batch_code(self):
+    #     """获取批次号"""
+    #     relative_url ="admin-api/system/autocode/get/BATCH_CODE"
+    #     inventory_batch_code = self.api.send_get_direct(relative_url)
+    #     return inventory_batch_code
 
     def auto_production_inventory_code(self):
         """获取产品入库单订单的自动编号"""
@@ -95,8 +95,7 @@ class ProductionInventory:
         formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
         # 这里直接写死了实收数量就是应收数量
         item["actualQuantity"] = item["inspectionQuantity"]
-        if item["batchManagement"] :
-            item["batchCode"] = self.auto_production_inventory_batch_code()
+
 
         # 因为负载里面是product开头，和查询的item开头不同，所以添加额外字段
         item["productId"] = item["itemId"]
@@ -125,9 +124,9 @@ class ProductionInventory:
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)
         # 打印日志调试
-        print("新增入库响应:", response)
+        print("新增产品入库响应:", response)
         # 断言接口成功
-        assert response["code"] == 200, f"新增入库失败，返回：{response}"
+        assert response["code"] == 200, f"新增产品入库失败，返回：{response}"
         # 保存 businessId
         business_id = response["data"]["businessId"]
         flow_ins_id,task_id = self.production_inventory_get(business_id)

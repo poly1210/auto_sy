@@ -63,6 +63,7 @@ class ProcessReporting:
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)
         print("新增工序报工响应:", response)
+        assert response["code"] == 200, f"工序报工失败，返回：{response}"
         return process_code
 
 

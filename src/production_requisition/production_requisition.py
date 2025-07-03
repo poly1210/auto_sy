@@ -127,8 +127,8 @@ class ProductionRequisition:
         response = self.api.send_get_direct(relative_url)
 
         # 日志 + 断言
-        print("查询订单响应:", response)
-        assert response["code"] == 200, f"查询订单失败，返回：{response}"
+        print("查询生产领料订单响应:", response)
+        assert response["code"] == 200, f"查询生产领料订单失败，返回：{response}"
 
         data = response["data"]
         return data["flowInsId"], data["taskId"]
@@ -158,6 +158,7 @@ class ProductionRequisition:
 
     def batch_code_choose(self, item_code, item_spec):
         """按先进先出原则选择批次号"""
+        # todo 可能要增加批次号中数量不够再选择别的
         relative_url = f"admin-api/mes/wm/wmstock/list?pageNum=1&pageSize=10&itemCode={item_code}&isSelect=true&itemSpec={item_spec}"
         response = self.api.send_get_direct(relative_url)
 

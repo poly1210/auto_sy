@@ -59,7 +59,7 @@ class ProcessInventory:
         relative_url = "admin-api/pro/recpt/batchTransfer"
         response = self.api.send_post_direct(relative_url, payload)
         print("工序入库:", response)
-        assert response["code"] == 200, f"入库失败，返回：{response}"
+        assert response["code"] == 200, f"工序入库失败，返回：{response}"
         # return response
 
 
