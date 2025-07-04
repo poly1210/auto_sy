@@ -76,7 +76,7 @@ class BuyOrder:
         payload = {
             **data_main,
             "purchaseCode": self.auto_buy_code(),
-            "purchaseDate" :formatted_date,
+            "purchaseData" :formatted_date,
             "deliveryDate" : delivery_date,
             "vendorId": vendor_id,
             "vendorName": vendor_name,
