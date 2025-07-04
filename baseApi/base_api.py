@@ -11,7 +11,7 @@ import logging
 class AllApi(object):
     def __init__(self):
         configPath = FilePath.get_config_path("config.yml")
-        tokenPath = FilePath.get_config_path("token.yml")
+        tokenPath = FilePath.get_token_path()
         self.run = RunMethod()
         self.read_config = ReadYaml(configPath)
         self.read_token = ReadYaml(tokenPath)

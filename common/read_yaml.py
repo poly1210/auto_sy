@@ -46,7 +46,7 @@ def write_token(response):
 
         # 确保目录存在
 
-        token_path = FilePath.get_config_path("token.yml")
+        token_path = FilePath.get_token_path()
         token_file = Path(token_path)
         token_file.parent.mkdir(parents=True, exist_ok=True)
 
