@@ -1,3 +1,4 @@
+import traceback
 from urllib.parse import quote
 from typing import List
 import pandas as pd
@@ -31,13 +32,14 @@ class ReadBuyXlsx:
         """根据产品编号获取采购单列表项内容"""
         url = f"admin-api/mes/md/mditem/select/page?pageNum=1&pageSize=10&isEnable=true&itemCode={code}&isSales=true"
         res = self.api.send_get_direct(url)
-        res[0]["itemSpec"] = res[0]["specification"]
+        res["rows"][0]["itemSpec"] = res["rows"][0]["specification"]
         if res.get("code") == 200 and res["total"] > 0:
             return res["rows"][0]
-        raise ValueError(f"未找到销售产品编号：{code}")
+        raise ValueError(f"未找到采购产品编号：{code}")
 
     def read_buy_xlsx(self, filepath: str) -> List[dict]:
         # 这里的单价是不含税的，和销售订单不一样
+        # 采购日期后端写的data你敢信？
         column_map = {
             "单据编号": "purchaseCode",
             "供应商": "vendorName",
@@ -83,7 +85,7 @@ class ReadBuyXlsx:
                     "currency" : currency,
                     "userName": user_name,
                     "purchaseData": pd.to_datetime(first["purchaseData"]).strftime("%Y-%m-%d"),
-                    "deliveryDate":pd.to_datetime(first["deliveryDate"]).strftime("%Y-%m-%d"),
+                    # "deliveryDate":pd.to_datetime(first["deliveryDate"]).strftime("%Y-%m-%d"),
                     "userId": user_id,
                     "list": []
                 }
@@ -115,10 +117,12 @@ class ReadBuyXlsx:
                     payload["list"].append(item)
 
                 payloads.append(payload)
+                print(payloads)
 
 
             except Exception as e:
-                print(f"[!] 采购单号 {purchase_code} 处理失败: {e}")
+                print(f"[!] 采购单号 {purchase_code} 表格处理失败:")
+                traceback.print_exc()
 
         return payloads
 

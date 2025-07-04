@@ -61,7 +61,7 @@ class BuyOrderByERP:
         goods_time = "2025-06-25"
 
         payload = [{
-            "purchaseData" :formatted_date,
+            "purchaseDate" :formatted_date,
             "goodsTime" : goods_time,
             "vendorId": vendor_id,
             "vendorName": vendor_name,

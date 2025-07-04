@@ -80,7 +80,7 @@ class BuyOrder:
                 }
             ],
             # "preAmount": 0,
-            "purchaseData": "2025-06-09 09:26:19",
+            "purchaseDate": "2025-06-09 09:26:19",
             # "status": "0",
             # "taxRate": 2,
             # "userId": 1,

@@ -110,7 +110,7 @@ class ReadSalesXlsx:
 
 
             except Exception as e:
-                print(f"[!] 销售单号 {sales_code} 处理失败: {e}")
+                print(f"[!] 销售单号 {sales_code} 表格处理失败: {e}")
 
         return payloads
 
