@@ -33,8 +33,19 @@ class BuyOrderNew:
 
         # 保存 businessId
         business_id = response["data"]["businessId"]
+        flow_ins_id,task_id = self.buy_order_get(business_id)
+        payload_commit = {
+            "taskid": task_id,
+            "insid": flow_ins_id,
+            "businessId": business_id,
+            "comment": "",
+            "operateType": "0",
+            "billType": "purchase"
+        }
+        print(payload_commit)
+        self.process_instance_cancel_flow(payload_commit)
 
-        return business_id
+
 
     def buy_order_get(self, business_id):
         """采购订单 - 查询详情，返回 insid 和 taskid"""
@@ -50,19 +61,7 @@ class BuyOrderNew:
         data = response["data"]
         return data["flowInsId"], data["taskId"]
 
-    def commit_task_by_business_id(self, business_id):
-        """封装好审批的payload数据"""
-        insid, taskid = self.buy_order_get(business_id)
 
-        payload = {
-            "taskid": taskid,
-            "insid": insid,
-            "businessId": business_id,
-            "comment": "",
-            "operateType": "0",
-            "billType": "purchase"
-        }
-        return payload
 
     def process_instance_cancel_flow(self, payload):
         """采购管理-采购订单明细--批量审批"""

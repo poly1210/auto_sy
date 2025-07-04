@@ -76,7 +76,7 @@ class ReadSalesXlsx:
                     "clientName": client_name,
                     "userName": user_name,
                     "salesData": pd.to_datetime(first["salesData"]).strftime("%Y-%m-%d"),
-                    "goodsTime":pd.to_datetime(first["goodsTime"]).strftime("%Y-%m-%d"),
+                    # "goodsTime":pd.to_datetime(first["goodsTime"]).strftime("%Y-%m-%d"),
                     "userId": user_id,
                     "list": []
                 }
@@ -86,6 +86,7 @@ class ReadSalesXlsx:
                     item_num = row["itemNum"]
                     tax_price = row["taxPrice"]
                     tax_rate = row["taxRate"]
+                    goods_time = row["goodsTime"]
 
                     item_info = self.sales_order_payload_list_get(code)
 
@@ -100,6 +101,7 @@ class ReadSalesXlsx:
                         "unitMoney": unit_money,
                         "taxRate": tax_rate,
                         "totalMoney":tax_price * item_num,
+                        "goodsTime": pd.to_datetime(goods_time).strftime("%Y-%m-%d"),
                     }
 
                     payload["list"].append(item)

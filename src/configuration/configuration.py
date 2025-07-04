@@ -102,12 +102,9 @@ class Configuration:
             #获取采购订单负载
             payloads = self.reader_buy.read_buy_xlsx(buy_order_path)
             for data in payloads:
-                # 新增采购订单
+                # 新增采购订单并审批
                 purchase_code = data["purchaseCode"]
-                business_id_buy_order = self.buy_order_new.buy_order_add(data)
-                # 审批
-                commit_payload_buy_order = self.buy_order_new.commit_task_by_business_id(business_id_buy_order)
-                self.buy_order_new.process_instance_cancel_flow(commit_payload_buy_order)
+                self.buy_order_new.buy_order_add(data)
                 # 判断物料是否全要检验，如果全不免检，就要走到货再检验，否则直接走入库
                 if not self.is_exempt_inspection.item_code_get(purchase_code) :
                     # 采购到货

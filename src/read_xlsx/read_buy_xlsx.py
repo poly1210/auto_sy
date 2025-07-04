@@ -31,6 +31,7 @@ class ReadBuyXlsx:
         """根据产品编号获取采购单列表项内容"""
         url = f"admin-api/mes/md/mditem/select/page?pageNum=1&pageSize=10&isEnable=true&itemCode={code}&isSales=true"
         res = self.api.send_get_direct(url)
+        res[0]["itemSpec"] = res[0]["specification"]
         if res.get("code") == 200 and res["total"] > 0:
             return res["rows"][0]
         raise ValueError(f"未找到销售产品编号：{code}")
