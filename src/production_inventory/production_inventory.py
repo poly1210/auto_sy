@@ -62,7 +62,7 @@ class ProductionInventory:
             "recptCode": self.auto_production_inventory_code(),
             "recptDate" : formatted_time,
             "list" : updated_data_list,
-            "status" : "0",
+            "status" : "2",
             "documentType" : "pro_work_order",
         }
         print(payload)
