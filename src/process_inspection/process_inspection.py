@@ -73,6 +73,9 @@ class ProcessInspection:
             "workorderDeptId": main_data["deptId"],
             "workorderDeptName":main_data["deptNameZH"] ,
             "workorderOrderNum": main_data["orderNum"],
+            # 这个是浏览器里面就写死的
+            "userDeptId": 103,
+            "userDeptName": "工程部",
             "workorderType": "process_inspection",
 
 

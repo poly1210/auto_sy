@@ -105,8 +105,13 @@ class ErpGUI(QWidget):
         mrp_scheme_name = self.mrp_scheme_name_input["input"].text().strip()
 
         mrp_scheme_id_str = self.mrp_scheme_id_input["input"].text().strip()
-        if mrp_scheme_id_str.strip():  # 判断不是空字符串
+        # 判断不是空字符串
+        if mrp_scheme_id_str.strip():
+            # 增加纯数字校验
+            if not mrp_scheme_id_str.isdigit():
+                raise ValueError("运算方案ID必须为纯数字！")
             mrp_scheme_id = int(mrp_scheme_id_str)
+
 
 
         production_order = self.production_order_input["input"].text().strip()
