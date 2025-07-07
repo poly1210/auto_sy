@@ -35,6 +35,15 @@ class ProductionInventory:
         data = response["rows"][0]
         return data
 
+    def production_order_batch_code(self,production_code,item_code):
+        """从生产领料处查询批次号填入生产工单入库的批次号"""
+        relative_url = f"admin-api/mes/wm/issueheader/detail?pageNum=1&pageSize=10&itemCode={item_code}&workorderCode={production_code}"
+        response = self.api.send_get_direct(relative_url)
+        return response["rows"][0]["batchCode"]
+
+
+
+
 
     def production_inventory_add_by_production(self, production_code):
         """生产管理-产品入库-产品入库(选择生产工单)"""
@@ -54,15 +63,21 @@ class ProductionInventory:
             new_item["productCode"] = item["itemCode"]
             new_item["productName"] = item["itemName"]
             new_item["productSpc"] = item["itemSpec"]
+            # 增加批次号
+            if new_item["batchManagement"]:
+                item_code = new_item["itemCode"]
+                batch_code = self.production_order_batch_code(production_code,item_code)
+                new_item["batchCode"] = batch_code
             updated_data_list.append(new_item)
 
         payload = {
+            # todo status要再看下
             **data_main ,
             "orderSource": "生产入库",
             "recptCode": self.auto_production_inventory_code(),
             "recptDate" : formatted_time,
             "list" : updated_data_list,
-            "status" : "2",
+            "status" : "0",
             "documentType" : "pro_work_order",
         }
         print(payload)

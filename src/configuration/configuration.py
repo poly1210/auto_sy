@@ -106,7 +106,7 @@ class Configuration:
                 # 新增采购订单并审批
                 purchase_code = data["purchaseCode"]
                 self.buy_order_new.buy_order_add(data)
-                # 判断物料是否全要检验，如果全不免检，就要走到货再检验，否则直接走入库
+                # 判断物料里面有没有需要检验的，如果有，就针对检验物料走一遍检验流程，然后免检的直接入库
                 if not self.is_exempt_inspection.item_code_get(purchase_code) :
                     # 采购到货
                     business_id_arrival_order, arrival_code = self.buy_arrival.buy_arrival_add(purchase_code,warehouse)
@@ -120,6 +120,11 @@ class Configuration:
                         business_id_inventory_by_inspection = self.buy_inventory.buy_inventory_add_by_inspection(code)
                         payload_commit_inventory_by_inspection = self.buy_inventory.commit_task_by_business_id(business_id_inventory_by_inspection)
                         self.buy_inventory.process_instance_cancel_flow(payload_commit_inventory_by_inspection)
+                    # 把免检的再入库
+                    if self.is_exempt_inspection.has_buy_inventory_order(purchase_code):
+                        business_id_inventory_by_order = self.buy_inventory.buy_inventory_add_by_order(purchase_code,warehouse)
+                        payload_commit_inventory_by_order = self.buy_inventory.commit_task_by_business_id(business_id_inventory_by_order)
+                        self.buy_inventory.process_instance_cancel_flow(payload_commit_inventory_by_order)
                 #直接采购订单完就入库,新增并审批
                 else :
                     business_id_inventory_by_order = self.buy_inventory.buy_inventory_add_by_order(purchase_code,warehouse)
@@ -148,10 +153,9 @@ class Configuration:
                 for item_code in item_codes:
                     while is_end_precess:
                         # 如果是车间派工的，就工序派工
-                        # TODO 这里要再写判断逻辑，是看有没有这个部门存在
-                        # if True :
-                        # 工序派工
-                        self.process_dispatch.process_dispatch_add(production_code,item_code)
+                        if self.process_commission.has_process_dispatch() :
+                            # 工序派工
+                            self.process_dispatch.process_dispatch_add(production_code,item_code)
                         #生产领料
                         # self.production_requisition.production_requisition_add(production_code)
                         #工序上线
@@ -188,7 +192,8 @@ class Configuration:
                     for code in inspection_codes:
                         self.production_inventory.production_inventory_add_by_inspection(code)
                 # 免检的直接入库
-                self.production_inventory.production_inventory_add_by_production(production_code)
+                else:
+                    self.production_inventory.production_inventory_add_by_production(production_code)
             return {"msg": "生产工单全流程执行成功"}
         except Exception as e:
             error_msg = f" 流程执行失败: {str(e)}"

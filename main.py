@@ -109,7 +109,8 @@ class ErpGUI(QWidget):
         if mrp_scheme_id_str.strip():
             # 增加纯数字校验
             if not mrp_scheme_id_str.isdigit():
-                raise ValueError("运算方案ID必须为纯数字！")
+                self.result_box.append("运算方案ID必须为纯数字！")
+                return
             mrp_scheme_id = int(mrp_scheme_id_str)
 
 

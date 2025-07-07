@@ -19,15 +19,26 @@ class IsExemptInspection:
         relative_url = f"admin-api/mes/po/purchase/list?pageNum=1&pageSize=10&purchaseCode={purchase_code}"
         response = self.api.send_get_direct(relative_url)
         data = response["rows"][0]["list"]
-        is_inspection = False
+        is_inspection = True
         for item in data:
             item_code = item["itemCode"]
             item_info = self.item_info_get(item_code)
             is_exempt_inspection = item_info["isExemptInspection"]
-            if is_exempt_inspection == "Y" :
-                is_inspection = True
+            if is_exempt_inspection == "N" :
+                is_inspection = False
                 break
         return is_inspection
+
+    def has_buy_inventory_order(self, code):
+        """通过直接查询订单的方式判断采购单中是否有剩余的可直接入库的产品"""
+        # purchaseTemplateId = self.buy_order_payload_get()
+        relative_url = f"admin-api/mes/po/purchase/select?pageNum=1&pageSize=50&purchaseCode={code}&isReturn=0"
+        response = self.api.send_get_direct(relative_url)
+        result = response["data"]["fatherSize"]
+        if result == 0 :
+            return False
+        else :
+            return True
 
 
 

@@ -15,6 +15,16 @@ class ProcessCommission:
             return True
 
 
+    def has_process_dispatch(self):
+        relative_url = "admin-api/system/parameter/list"
+        response = self.api.send_get_direct(relative_url)
+        result = response["data"]["processDispatch"]
+        if result:
+            return True
+        else:
+            return False
+
+
     def process_commission_info_get(self, production_code):
         """获取工单投产的负载信息"""
         relative_url = f"admin-api/mes/pro/info/production/list?pageNum=1&pageSize=10&isCancel=false&workorderCode={production_code}"

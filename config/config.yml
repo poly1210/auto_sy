@@ -1,5 +1,6 @@
 
-pre-url : http://192.168.3.128:1170/
+#todo 不同环境下这个前缀网址要修改
+pre-url : http://192.168.3.128:1100/
 
 #这里的admin-api/login被改成admin-api/config.yml
 admin-api/config.yml:

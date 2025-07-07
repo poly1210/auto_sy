@@ -79,7 +79,7 @@ class BuyInspection:
             "billType": "inspection_purchase"
             }
             response_code = self.process_instance_cancel_flow(payload_commit)
-            assert response_code == 200, f"审批失败，状态码：{response_code}"
+            assert response_code == 200, f"采购检验审批失败，状态码：{response_code}"
         return inspection_codes
 
 
