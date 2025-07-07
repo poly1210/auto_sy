@@ -2,10 +2,11 @@ import sys
 import os
 import time
 
-from baseApi.base_api import AllApi
+
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(project_root)
+from baseApi.base_api import AllApi
 # 导入从表格读取销售订单数据方法
 from src.read_xlsx.read_sales_xlsx import ReadSalesXlsx
 # 导入销售订单新增方法
@@ -76,7 +77,7 @@ class Configuration:
     def run_one(self,sale_order_path,scheme_id,scheme_name):
         """从表格读取销售订单-新增-审批-mrp运算-生成生产计划和采购计划"""
         # 获取销售订单负载
-        self.api.send_login("admin-api/config.yml")
+
         try:
             payloads = self.reader_sales.read_sales_xlsx(sale_order_path)
             for data in payloads:
@@ -98,7 +99,6 @@ class Configuration:
 
     def run_two(self,buy_order_path,warehouse):
         """从表格读取采购订单-新增--审批-（到货-审批-采购检验-审批）-采购入库"""
-        self.api.send_login("admin-api/config.yml")
         try:
             #获取采购订单负载
             payloads = self.reader_buy.read_buy_xlsx(buy_order_path)
@@ -133,7 +133,6 @@ class Configuration:
     # worker是车间派工的工作人
     def run_three(self,production_code):
         """生产管理和生产管理——工序的全流程综合"""
-        self.api.send_login("admin-api/config.yml")
         try:
             # 分成两块（报工和不报工的），先是有工序报工的
             if self.production_requisition.has_report(production_code):
@@ -167,8 +166,8 @@ class Configuration:
                             is_end_precess = False
                             # 如果是末工序就工序入库
                             self.process_inventory.process_inventory_add(production_code)
-                            # 产品入库todo 这里要在思考下
-                            self.production_inventory.production_inventory_add_by_production(production_code)
+                            # 产品入库
+                            # self.production_inventory.production_inventory_add_by_production(production_code)
                         # 工序转移
                         else :
                             self.process_transfer.process_transfer(production_code)

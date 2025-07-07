@@ -1,9 +1,12 @@
 import yaml
 from pathlib import Path
 from typing import Dict, Any
+import sys
+import os
 import common.file_path as FilePath
-
-
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.append(project_root)
+# from common.file_path import get_config_path
 def ReadYaml(file_path: str) -> Dict[str, Any]:
     """
     读取YAML文件内容并返回Python字典
@@ -46,7 +49,7 @@ def write_token(response):
 
         # 确保目录存在
 
-        token_path = FilePath.get_token_path()
+        token_path = FilePath.get_config_path("token.yml")
         token_file = Path(token_path)
         token_file.parent.mkdir(parents=True, exist_ok=True)
 

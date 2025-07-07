@@ -123,6 +123,7 @@ class ReadBuyXlsx:
             except Exception as e:
                 print(f"[!] 采购单号 {purchase_code} 表格处理失败:")
                 traceback.print_exc()
+                raise
 
         return payloads
 

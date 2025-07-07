@@ -56,17 +56,6 @@ class ProductionRequisition:
         data = response["data"]
         return data["father"][0],data["children"]
 
-    # def warehouse_info_get(self, name):
-    #     """根据仓库名称查询仓库信息，返回完整仓库对象"""
-    #     name = quote(name)
-    #     relative_url = f"admin-api/mes/wm/warehouse/list?pageNum=1&pageSize=10&warehouseName={name}"
-    #     response = self.api.send_get_direct(relative_url)
-    #
-    #     if not response.get("rows"):
-    #         raise ValueError(f"未找到名为 {name} 的仓库，请确认仓库是否存在")
-    #
-    #     warehouse_info = response["rows"][0]  # 取第一个匹配结果
-    #     return warehouse_info
 
     def production_requisition_add(self,production_code):
         """生产管理-生产领料"""
