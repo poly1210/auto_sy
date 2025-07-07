@@ -50,7 +50,6 @@ class Configuration:
     # 引入类实例
     def __init__(self,api):
         self.api = api
-        self.send_login("admin-api/login")
         self.reader_sales = ReadSalesXlsx()
         self.sale_order = SaleOrder(api)
         self.mrp_cal = MRPCalculation(api)

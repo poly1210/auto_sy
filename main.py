@@ -13,6 +13,10 @@ sys.path.append(root_path)
 
 from src.configuration.configuration import Configuration  # 你的配置逻辑类
 
+import requests
+
+
+
 class ErpGUI(QWidget):
     def __init__(self):
         super().__init__()
@@ -88,6 +92,14 @@ class ErpGUI(QWidget):
             input_field.setText(file_path)
 
     def execute_selected_method(self):
+        # try:
+        #     response = requests.get("https://www.baidu.com", timeout=5)
+        #     if response.status_code == 200:
+        #         print("联网正常")
+        #     else:
+        #         print("联网异常")
+        # except Exception as e:
+        #     print(f"联网失败：{e}")
         """执行选中的方法"""
         # 读取输入值
         mrp_scheme_name = self.mrp_scheme_name_input["input"].text().strip()
