@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import TypedDict
 from baseApi.base_api import AllApi
 
@@ -44,10 +45,12 @@ class MRPCalculation:
         sales_item["operationQuantity"] = executable_num
         sales_item["quantity"] = executable_num
         #sales_item["index"] = 1
+        now = datetime.now()
+        formatted_date = now.strftime("%Y-%m-%d")
         payload = {
             "calculationCode": self.auto_mrp_code(),
             # 这里的单据日期直接选择和销售订单的销售日期相同
-            "calculationDate": sales_item["sourceOrderDate"],
+            "calculationDate": formatted_date,
             "list": [sales_item],
             # 这三个需要前端传入
             "requirementsAnalysis": 1,
