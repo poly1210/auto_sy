@@ -11,7 +11,7 @@ import logging
 class AllApi(object):
     def __init__(self):
         configPath = FilePath.get_config_path("config.yml")
-        tokenPath = FilePath.get_config_path("token.yml")
+        tokenPath = FilePath.get_token_path()
         self.run = RunMethod()
         self.read_config = ReadYaml(configPath)
         self.read_token = ReadYaml(tokenPath)
@@ -41,6 +41,7 @@ class AllApi(object):
             assert response["code"] == 200
             # 把token值写到配置文件access_token.yml中，供其他接口调用
             write_token(response)
+            self.read_token = ReadYaml(FilePath.get_token_path())  # 刷新token
 
             print("响应：", json.dumps(response, indent=2, ensure_ascii=False, sort_keys=False))
             return response
