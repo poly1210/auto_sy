@@ -2,7 +2,7 @@ from datetime import datetime
 
 from baseApi.base_api import AllApi
 
-#采购检验单生成
+#采购到货检验单生成
 class BuyInspection:
 
     def __init__(self, api):
@@ -29,19 +29,26 @@ class BuyInspection:
         data = response["data"]
         return data["list"]
 
-    def buy_inspection_add(self,code):
+    def inspection_user_info_get(self,user_name):
+        relative_url = f"admin-api/system/user/list?pageNum=1&pageSize=10&userName={user_name}"
+        response = self.api.send_get_direct(relative_url)
+        data = response["rows"][0]
+        return data["dept"]["deptId"],data["dept"]["deptName"],data["userId"]
+
+    def buy_inspection_add(self,code,user_name):
         """生产管理-采购检验单-新增"""
         now = datetime.now()
         # 格式化为 YYYY-MM-DD
         formatted_date = now.strftime("%Y-%m-%d")
+        dept_id, dept_name, user_id = self.inspection_user_info_get(user_name)
         relative_url = "admin-api/qc/inspection/purchase"
         receipts_code = code
         datas = self.buy_order_payload_get(receipts_code)
         inspection_codes = []
+        creator = self.api.create_by_get()
         for index,item in enumerate(datas,start = 1):
             main_data, purchase_template_id = item, item["purchaseTemplateId"]
             list_data = self.buy_order_payload_list_get(purchase_template_id)
-            # TODO :质检人要配置
             inspection_code = self.auto_buy_inspection_code()
             inspection_codes.append(inspection_code)
             item["documentNumber"] = index
@@ -50,13 +57,14 @@ class BuyInspection:
                 "inspectionCode": inspection_code,
                 **main_data,
                 "inspectionDate":  formatted_date,
-                "createBy": "admin",
+                # todo 共有三处创建人，后面要写成和登录人名字一样
+                "createBy": creator,
                 "damagedQuantity" : 0,
                 "inspectionQuantity" : item["receivedQuantity"],
                 "returnQuantity" : 0,
                 "judgmentStatus" : 1,
-                "qcUserName" : "admin",
-                "qcUserId" : 1,
+                "qcUserName" : user_name,
+                "qcUserId" : user_id,
                 "list" : list_data,
 
             }
@@ -64,9 +72,9 @@ class BuyInspection:
             # 发送 POST 请求（JSON 格式）
             response = self.api.send_post_direct(relative_url, payload)
             # 打印日志调试
-            print("新增检验单响应:", response)
+            print("新增采购到货检验单响应:", response)
             # 断言接口成功
-            assert response["code"] == 200, f"新增检验单失败，返回：{response}"
+            assert response["code"] == 200, f"新增采购到货检验单失败，返回：{response}"
             # 保存 businessId
             business_id = response["data"]["businessId"]
             insid, taskid = self.buy_inspection_get(business_id)

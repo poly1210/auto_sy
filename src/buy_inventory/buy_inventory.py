@@ -71,6 +71,7 @@ class BuyInventory:
             new_item["warehouseName"] = warehouse_info["warehouseName"]
             new_item["warehouseCode"] = warehouse_info["warehouseCode"]
             new_item["warehouseId"] = warehouse_info["warehouseId"]
+            new_item["warehouseNameZh"] = warehouse_info["warehouseName"]
             new_item["quantityRecived"] = item["itemNum"]
             if new_item["batchManagement"] is True and not new_item.get("batchCode"):
                 new_item["batchCode"] = self.auto_batch_code()
@@ -81,7 +82,6 @@ class BuyInventory:
             **data_main,
             # type代表不同类型的入库方式
             "type":"00",
-            # 这个入库数量的英文是跟后端同步的，后端就是错的，而且不知道为什么查询的时候没带入库数量
             # 入库数量是放在list里面的
             "list": updated_data_list ,
         }
@@ -116,7 +116,8 @@ class BuyInventory:
 
         now = datetime.now()
         formatted_date = now.strftime("%Y-%m-%d")
-        user_name = "admin"
+        # 这的user_name是经手人
+        user_name = self.api.create_by_get()
         user_id = self.userid_get(user_name)
         payload = {
             "distinguish":0,

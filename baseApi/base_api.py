@@ -26,6 +26,11 @@ class AllApi(object):
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
+    def create_by_get(self):
+        """读config里面文件，获取创建人（登录人）名字"""
+        creator = self.read_config["admin-api/config.yml"]["data"]["userName"]
+        return creator
+
     # postJSON请求
     def send_login(self, api_name):
         try:

@@ -76,8 +76,9 @@ class ProductionRequisition:
             # 添加领料数量
             new_item["quantityIssued"] = item.get("unpickedQuantity")
             new_item["index"] = index
+            # 使用quote的时候先要保证这个item_spec存在
             item_spec = new_item["itemSpec"]
-            item_spec_code = quote(item_spec)
+            item_spec_code = quote(item_spec.encode('utf-8'))
             item_code = new_item["itemCode"]
             if new_item["batchManagement"]:
                 new_item["batchCode"] = self.batch_code_choose(item_code,item_spec_code)

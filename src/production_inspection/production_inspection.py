@@ -30,25 +30,30 @@ class ProductionInspection:
         data_list = response["data"]["list"][0]
         return data_list
 
-    def worker_info_get(self):
-        """查询所有员工，随机选择一个员工，并返回员工id"""
-        relative_url = f"admin-api/system/user/list?status=0"
+    # def worker_info_get(self):
+    #     """查询所有员工，随机选择一个员工，并返回员工id"""
+    #     relative_url = f"admin-api/system/user/list?status=0"
+    #     response = self.api.send_get_direct(relative_url)
+    #     total = response["total"]
+    #     if total == 0:
+    #         raise ValueError("没有员工")
+    #     random_number = random.randint(1, total)
+    #     random_number_new = random_number-1
+    #     worker_info = response["rows"][random_number_new]  # 取第一个匹配结果
+    #     return worker_info["userId"],worker_info["nickName"]
+    def inspection_user_info_get(self,user_name):
+        relative_url = f"admin-api/system/user/list?pageNum=1&pageSize=10&userName={user_name}"
         response = self.api.send_get_direct(relative_url)
-        total = response["total"]
-        if total == 0:
-            raise ValueError("没有员工")
-        random_number = random.randint(1, total)
-        random_number_new = random_number-1
-        worker_info = response["rows"][random_number_new]  # 取第一个匹配结果
-        return worker_info["userId"],worker_info["nickName"]
+        data = response["rows"][0]
+        return data["dept"]["deptId"],data["dept"]["deptName"],data["userId"]
 
-    def production_inspection_add(self, commission_code):
+    def production_inspection_add(self, commission_code,user_name):
         """生产管理-产品入库-生产检验单"""
         relative_url = "admin-api/qc/inspection"
         data_mains = self.production_inspection_payload_main_get(commission_code)
         current_time = datetime.now()
         formatted_time = current_time.strftime("%Y-%m-%d  %H:%M:%S")
-        user_id,user_name = self.worker_info_get()
+        dept_id,dept_name,user_id = self.inspection_user_info_get(user_name)
         inspection_codes = []
 
         for item in data_mains:

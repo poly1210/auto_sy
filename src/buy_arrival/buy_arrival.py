@@ -39,13 +39,22 @@ class BuyArrival:
         data = response["rows"]
         return data
 
+    def inspection_user_info_get(self,user_name):
+        """查询质检人的部门信息和个人信息"""
+        relative_url = f"admin-api/system/user/list?pageNum=1&pageSize=10&userName={user_name}"
+        response = self.api.send_get_direct(relative_url)
+        data = response["rows"][0]
+        return data["dept"]["deptId"],data["dept"]["deptName"],data["userId"]
+
     def buy_arrival_add(self, purchase_code,warehouse_name):
         """采购管理-采购到货单-新增"""
         now = datetime.now()
         formatted_date = now.strftime("%Y-%m-%d")
+        # todo 登录人
+        user_name = self.api.create_by_get()
+        dept_id, dept_name, user_id = self.inspection_user_info_get(user_name)
         relative_url = "admin-api/mes/wm/receipts"
         list_data = self.buy_order_arrival_payload_list_get(purchase_code)
-        # TODO 仓库要写成能配置
         warehouse_info = self.warehouse_info_get(warehouse_name)
         receipts_code = self.auto_buy_arrival_code()
 
@@ -53,6 +62,7 @@ class BuyArrival:
             item["warehouseName"] = warehouse_info["warehouseName"]
             item["warehouseCode"] = warehouse_info["warehouseCode"]
             item["warehouseId"] = warehouse_info["warehouseId"]
+            item["warehouseNameZh"] = warehouse_info["warehouseName"]
             # TODO: 这里如果是一个订单下，多个物料，不同仓库，就要变
             item["warehouseInfo"] = [warehouse_info["warehouseId"]]
             item["receivedQuantity"] = item["notReceivedGoods"]
@@ -67,10 +77,10 @@ class BuyArrival:
         payload = {
             "receiptsCode": receipts_code,
             "receiptsDate":  formatted_date,
-            "createBy" : "admin",
-            "userId" : 1,
-            "userDeptId" : 103,
-            "userDeptName" : "工程部",
+            "createBy" : user_name,
+            "userId" : user_id,
+            "userDeptId" : dept_id,
+            "userDeptName" : dept_name,
             "vendorCode" : list_data[0]["vendorCode"],
             "vendorId" : list_data[0]["vendorId"],
             "vendorName" :list_data[0]["vendorName"],

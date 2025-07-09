@@ -52,7 +52,6 @@ class ProductionSubmission:
             item["isAuto"] = "true"
             item["unitOfMeasure"] = item["supplyUnit"]
             item["workorderCode"] = item["documentCode"]
-            # 这两个赋值写死的，在遇到多订单的时候可能会报错
             item["workorderSerialNumber"] = index
             item["index"] = index
             item["bomId"] = item["documentLineId"]
@@ -64,8 +63,9 @@ class ProductionSubmission:
         # warehouse_info = self.warehouse_info_get("总仓库")
         # 新增：将 workshopName 转换为列表格式
         submission_code = self.auto_production_submission_code()
+        creator = self.api.create_by_get()
         payload = {
-            "createBy":"admin",
+            "createBy": creator,
             "inspectionCode": submission_code,
             "inspectionDate": formatted_time,
             "deptList" :data_list[0]["deptList"],

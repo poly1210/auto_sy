@@ -12,9 +12,7 @@ root_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(root_path)
 
 from src.configuration.configuration import Configuration  # 你的配置逻辑类
-
 import requests
-
 
 
 class ErpGUI(QWidget):
@@ -23,13 +21,17 @@ class ErpGUI(QWidget):
         self.setWindowTitle("ERP自动化工具")
         self.resize(600, 400)  # 设置窗口初始尺寸
         self.api = AllApi()
-        self.config = Configuration(self.api)  # 实例化配置类（注意不要漏了括号，如果需要实例）
+        self.config = Configuration(self.api)  # 实例化配置类
 
         # ==== 输入组件 ====
         self.mrp_scheme_name_input = self._create_input_row("MRP运算方案名称：")
         self.mrp_scheme_id_input = self._create_input_row("MRP运算方案ID：")
         self.production_order_input = self._create_input_row("生产工单号：")
         self.warehouse_input = self._create_input_row("采购到货仓库名：")
+
+        # 新增：质检人姓名输入项
+        self.inspector_input = self._create_input_row("质检人姓名：")
+
         self.sale_order_path_input = self._create_input_row("销售订单文件地址：", with_button=True)
         self.buy_order_path_input = self._create_input_row("采购订单文件地址：", with_button=True)
 
@@ -55,6 +57,10 @@ class ErpGUI(QWidget):
         layout.addLayout(self.mrp_scheme_id_input['layout'])
         layout.addLayout(self.production_order_input['layout'])
         layout.addLayout(self.warehouse_input['layout'])
+
+        # 插入新增的质检人输入项
+        layout.addLayout(self.inspector_input['layout'])
+
         layout.addLayout(self.sale_order_path_input['layout'])
         layout.addLayout(self.buy_order_path_input['layout'])
         layout.addLayout(method_layout)
@@ -92,31 +98,12 @@ class ErpGUI(QWidget):
             input_field.setText(file_path)
 
     def execute_selected_method(self):
-        # try:
-        #     response = requests.get("https://www.baidu.com", timeout=5)
-        #     if response.status_code == 200:
-        #         print("联网正常")
-        #     else:
-        #         print("联网异常")
-        # except Exception as e:
-        #     print(f"联网失败：{e}")
         """执行选中的方法"""
-        # 读取输入值
         mrp_scheme_name = self.mrp_scheme_name_input["input"].text().strip()
-
         mrp_scheme_id_str = self.mrp_scheme_id_input["input"].text().strip()
-        # 判断不是空字符串
-        if mrp_scheme_id_str.strip():
-            # 增加纯数字校验
-            if not mrp_scheme_id_str.isdigit():
-                self.result_box.append("运算方案ID必须为纯数字！")
-                return
-            mrp_scheme_id = int(mrp_scheme_id_str)
-
-
-
         production_order = self.production_order_input["input"].text().strip()
         warehouse = self.warehouse_input["input"].text().strip()
+        inspector = self.inspector_input["input"].text().strip()  # 新增字段
         sale_order_path = self.sale_order_path_input["input"].text().strip()
         buy_order_path = self.buy_order_path_input["input"].text().strip()
 
@@ -124,22 +111,26 @@ class ErpGUI(QWidget):
 
         try:
             if selected_method == "方法一":
-                if not mrp_scheme_name or not mrp_scheme_id or not sale_order_path:
+                if not mrp_scheme_name or not mrp_scheme_id_str or not sale_order_path:
                     self.result_box.append("方法一：MRP运算方案名称 / ID / 销售订单路径不能为空")
                     return
+                if not mrp_scheme_id_str.isdigit():
+                    self.result_box.append("运算方案ID必须为纯数字！")
+                    return
+                mrp_scheme_id = int(mrp_scheme_id_str)
                 result = self.config.run_one(sale_order_path, mrp_scheme_id, mrp_scheme_name)
 
             elif selected_method == "方法二":
-                if not buy_order_path or not warehouse:
-                    self.result_box.append("方法二：采购订单路径 / 仓库名不能为空")
+                if not buy_order_path or not warehouse or not inspector:
+                    self.result_box.append("方法二：采购订单路径 / 仓库名/质检人不能为空")
                     return
-                result = self.config.run_two(buy_order_path, warehouse)
+                result = self.config.run_two(buy_order_path, warehouse,inspector)
 
             elif selected_method == "方法三":
-                if not production_order:
-                    self.result_box.append("方法三：生产工单号不能为空")
+                if not production_order or not inspector:
+                    self.result_box.append("方法三：生产工单号/质检人不能为空")
                     return
-                result = self.config.run_three(production_order)
+                result = self.config.run_three(production_order,inspector)
 
             else:
                 result = "未知方法"

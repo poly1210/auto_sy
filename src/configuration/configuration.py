@@ -1,8 +1,7 @@
 import sys
 import os
 import time
-
-
+import traceback
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(project_root)
@@ -97,7 +96,7 @@ class Configuration:
             error_msg = f" 流程执行失败: {str(e)}"
             return {"msg": error_msg}
 
-    def run_two(self,buy_order_path,warehouse):
+    def run_two(self,buy_order_path,warehouse,user_name):
         """从表格读取采购订单-新增--审批-（到货-审批-采购检验-审批）-采购入库"""
         self.api.send_login("admin-api/config.yml")
         try:
@@ -115,7 +114,7 @@ class Configuration:
                     commit_payload_arrival_order = self.buy_arrival.commit_task_by_business_id(business_id_arrival_order)
                     self.buy_arrival.process_instance_cancel_flow(commit_payload_arrival_order)
                     # 传入到货单号,生成采购检验订单和审核
-                    inspection_codes = self.buy_inspection.buy_inspection_add(arrival_code)
+                    inspection_codes = self.buy_inspection.buy_inspection_add(arrival_code,user_name)
                     # 选采购检验单的采购入库,新增并审批
                     for code in inspection_codes:
                         business_id_inventory_by_inspection = self.buy_inventory.buy_inventory_add_by_inspection(code)
@@ -137,7 +136,7 @@ class Configuration:
             return {"msg": error_msg}
 
     # worker是车间派工的工作人
-    def run_three(self,production_code):
+    def run_three(self,production_code,user_name):
         """生产管理和生产管理——工序的全流程综合"""
         self.api.send_login("admin-api/config.yml")
         try:
@@ -166,7 +165,7 @@ class Configuration:
                         process_code =self.process_reporting.process_reporting_add(production_code)
                         #看是否需要检验,写不免检的流程
                         if not self.process_reporting.has_process_inspection(process_code):
-                            self.process_inspection.process_inspection_add(production_code)
+                            self.process_inspection.process_inspection_add(production_code,user_name)
                         #判断是否末工序，就看工单投产搜单号能不能返回结果
                         if not self.process_commission.is_last_process(production_code,item_code):
                             is_end_precess = False
@@ -189,7 +188,7 @@ class Configuration:
                     # 产品送检
                     submission_code = self.production_submission.production_submission_add(production_code)
                     # 生产检验
-                    inspection_codes = self.production_inspection. production_inspection_add(submission_code)
+                    inspection_codes = self.production_inspection. production_inspection_add(submission_code,user_name)
                     #生产检验单的产品入库
                     for code in inspection_codes:
                         self.production_inventory.production_inventory_add_by_inspection(code)
@@ -198,8 +197,12 @@ class Configuration:
                     self.production_inventory.production_inventory_add_by_production(production_code)
             return {"msg": "生产工单全流程执行成功"}
         except Exception as e:
-            error_msg = f" 流程执行失败: {str(e)}"
-            return {"msg": error_msg}
+            # error_msg = f" 流程执行失败: {str(e)}"
+            # return {"msg": error_msg}
+            error_msg = f"流程执行失败: {str(e)}"
+            print("详细错误信息：")
+            traceback.print_exc()  # 打印完整堆栈信息
+            return {"msg": error_msg, "traceback": traceback.format_exc()}
 
 
 if __name__ == "__main__":

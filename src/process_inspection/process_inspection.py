@@ -33,9 +33,17 @@ class ProcessInspection:
         data = response["data"]
         return data["list"]
 
-    def process_inspection_add(self,production_code):
+    def inspection_user_info_get(self,user_name):
+        """查询质检人的部门信息和个人信息"""
+        relative_url = f"admin-api/system/user/list?pageNum=1&pageSize=10&userName={user_name}"
+        response = self.api.send_get_direct(relative_url)
+        data = response["rows"][0]
+        return data["dept"]["deptId"],data["dept"]["deptName"],data["userId"]
+
+    def process_inspection_add(self,production_code,user_name):
         """质量管理-工序检验-新增"""
         inspection_code = production_code
+        dept_id,dept_name,user_id = self.inspection_user_info_get(user_name)
         main_data, process_reporting_template_id = self.process_reporting_payload_get(inspection_code)
         print(main_data)
         list_data = self.process_reporting_payload_list_get(process_reporting_template_id)
@@ -57,9 +65,8 @@ class ProcessInspection:
             "inspectionCode": self.auto_process_inspection_code(),
             **main_data,
             "inspectionDate": formatted_time,
-            # TODO 质检人要进行配置
-            "qcUserName": "admin",
-            "qcUserId": 1,
+            "qcUserName": user_name,
+            "qcUserId": user_id,
             # "damagedQuantity" : 0,
             "judgmentStatus": 1,
             "returnQuantity": 0,
@@ -73,9 +80,8 @@ class ProcessInspection:
             "workorderDeptId": main_data["deptId"],
             "workorderDeptName":main_data["deptNameZH"] ,
             "workorderOrderNum": main_data["orderNum"],
-            # 这个是浏览器里面就写死的
-            "userDeptId": 103,
-            "userDeptName": "工程部",
+            "userDeptId": dept_id,
+            "userDeptName": dept_name,
             "workorderType": "process_inspection",
 
 
