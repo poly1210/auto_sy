@@ -1,5 +1,4 @@
 import requests
-
 from baseApi.run_method import RunMethod
 from common.read_yaml import ReadYaml
 from common.read_yaml import write_token
@@ -10,7 +9,7 @@ import logging
 
 class AllApi(object):
     def __init__(self):
-        configPath = FilePath.get_config_path("config.yml")
+        configPath = FilePath.get_config_path()
         tokenPath = FilePath.get_token_path()
         self.run = RunMethod()
         self.read_config = ReadYaml(configPath)
@@ -28,7 +27,7 @@ class AllApi(object):
 
     def create_by_get(self):
         """读config里面文件，获取创建人（登录人）名字"""
-        creator = self.read_config["admin-api/config.yml"]["data"]["userName"]
+        creator = self.read_config["admin-api/config.yml"]["data"]["username"]
         return creator
 
     # postJSON请求
@@ -206,15 +205,7 @@ class AllApi(object):
         except Exception as e:
             print("接口访问出错啦~ %s" % e)
 
-    # 获取预期结果，方便断言时直接使用
-    def get_expect(self, api_name):
-        try:
-            # 获取配置文件中的预期结果
-            expect = self.read.get_expected(api_name)
-            # print(expect)
-            return expect
-        except Exception as e:
-            print("获取预期结果出错啦~ %s" % e)
+
 
     # 直接发送GET请求，不依赖yml，用于传具体参
     def send_get_direct(self, relative_url):

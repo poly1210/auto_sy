@@ -93,8 +93,10 @@ class Configuration:
             return {"msg": "销售订单全流程执行成功"}
         except Exception as e:
             # 捕获异常并返回错误信息
-            error_msg = f" 流程执行失败: {str(e)}"
-            return {"msg": error_msg}
+            error_msg = f"流程执行失败: {str(e)}"
+            print("详细错误信息：")
+            traceback.print_exc()  # 打印完整堆栈信息
+            return {"msg": error_msg, "traceback": traceback.format_exc()}
 
     def run_two(self,buy_order_path,warehouse,user_name):
         """从表格读取采购订单-新增--审批-（到货-审批-采购检验-审批）-采购入库"""
@@ -132,8 +134,10 @@ class Configuration:
                     self.buy_inventory.process_instance_cancel_flow( payload_commit_inventory_by_order)
             return {"msg": "采购订单全流程执行成功"}
         except Exception as e:
-            error_msg = f" 流程执行失败: {str(e)}"
-            return {"msg": error_msg}
+            error_msg = f"流程执行失败: {str(e)}"
+            print("详细错误信息：")
+            traceback.print_exc()  # 打印完整堆栈信息
+            return {"msg": error_msg, "traceback": traceback.format_exc()}
 
     # worker是车间派工的工作人
     def run_three(self,production_code,user_name):

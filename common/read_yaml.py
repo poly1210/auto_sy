@@ -35,8 +35,6 @@ def write_token(response):
     try:
         token = response["token"]
         config_data = {"token": token}
-
-
         token_path = FilePath.get_token_path()  # 正确使用新函数
         token_file = Path(token_path)
         token_file.parent.mkdir(parents=True, exist_ok=True)

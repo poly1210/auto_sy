@@ -69,6 +69,7 @@ class BuyInventory:
             new_item["index"] = index
             new_item["warehouseName"] = warehouse_info["warehouseName"]
             new_item["warehouseCode"] = warehouse_info["warehouseCode"]
+            new_item["warehouseNameZh"] = warehouse_info["warehouseName"]
             new_item["warehouseId"] = warehouse_info["warehouseId"]
             new_item["quantityRecived"] = item["itemNum"]
             if new_item["batchManagement"] == "true":
