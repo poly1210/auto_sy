@@ -74,6 +74,8 @@ class SaleOrder:
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
         response  = self.api.send_post_direct(relative_url, payload)
+        assert response["code"] == 200, f"销售订单审批失败，返回：{response}"
+
         return response["code"]
 
 # 使用示例

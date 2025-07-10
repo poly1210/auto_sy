@@ -114,6 +114,8 @@ class BuyInspection:
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
         response = self.api.send_post_direct(relative_url, payload)
+        assert response["code"] == 200, f"采购到货检验单审批失败，返回：{response}"
+
         return response["code"]
 
 

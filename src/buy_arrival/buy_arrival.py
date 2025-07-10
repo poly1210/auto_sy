@@ -134,11 +134,13 @@ class BuyArrival:
         return payload
 
     def process_instance_cancel_flow(self,payload):
-        """采购管理-采购检验订单明细--批量审批"""
+        """采购管理-采购到货订单--批量审批"""
         relative_url = "admin-api/oa/myTask/commitTask"
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
         response = self.api.send_post_direct(relative_url, payload)
+        assert response["code"] == 200, f"采购到货单审批失败，返回：{response}"
+
         return response["code"]
 
 

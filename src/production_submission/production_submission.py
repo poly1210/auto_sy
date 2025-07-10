@@ -137,11 +137,13 @@ class ProductionSubmission:
 
 
     def process_instance_cancel_flow(self, payload):
-        """审批"""
+        """产品送检单-审批"""
         relative_url = "admin-api/oa/myTask/commitTask"
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
         response = self.api.send_post_direct(relative_url, payload)
+        assert response["code"] == 200, f"产品送检单新增审批失败，返回：{response}"
+
         return response["code"]
 
         # 使用示例

@@ -103,11 +103,13 @@ class SaleOut:
         return  payload
 
     def process_instance_cancel_flow(self,  payload):
-        "销售管理-销售订单明细--批量审批"
-        relative_url = "admin-api/oa/myTask/commitTask"
+        """销售管理-销售出库明细--批量审批"""
+        relative_url = "admin-api/oa/myTask/c""ommitTask"
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
         response  = self.api.send_post_direct(relative_url, payload)
+        assert response["code"] == 200, f"销售出库审批失败，返回：{response}"
+
         return response["code"]
 
 # 使用示例

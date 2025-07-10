@@ -147,7 +147,9 @@ class Configuration:
             # 分成两块（报工和不报工的），先是有工序报工的
             if self.production_requisition.has_report(production_code):
                 # 生产领料
-                self.production_requisition.production_requisition_add(production_code)
+                business_id_production_requisition = self.production_requisition.production_requisition_add(production_code)
+                payload_commit_production_requisition = self.production_requisition.commit_task_by_business_id(business_id_production_requisition)
+                self.production_requisition.process_instance_cancel_flow(payload_commit_production_requisition)
                 # 工单投产并获取产品编号
                 item_codes = self.process_commission.process_commission(production_code)
                 # 只要不是末工序就一直在流程中流转
@@ -213,7 +215,7 @@ if __name__ == "__main__":
     api = AllApi()
     api.send_login("admin-api/config.yml")
     configuration = Configuration(api)
-    configuration.run_three("MO202507020014")
+
 
 
 

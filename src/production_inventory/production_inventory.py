@@ -177,6 +177,8 @@ class ProductionInventory:
 
         # 通过 AllApi 的简洁 POST 方法直接发请求
         response = self.api.send_post_direct(relative_url, commit_payload)
+        assert response["code"] == 200, f"产品入库审批失败，返回：{response}"
+
         return response["code"]
 
         # 使用示例
