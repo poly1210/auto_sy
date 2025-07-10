@@ -146,6 +146,8 @@ class Configuration:
         try:
             # 分成两块（报工和不报工的），先是有工序报工的
             if self.production_requisition.has_report(production_code):
+                # 生产领料
+                self.production_requisition.production_requisition_add(production_code)
                 # 工单投产并获取产品编号
                 item_codes = self.process_commission.process_commission(production_code)
                 # 只要不是末工序就一直在流程中流转
@@ -161,8 +163,6 @@ class Configuration:
                         if self.process_commission.has_process_dispatch() :
                             # 工序派工
                             self.process_dispatch.process_dispatch_add(production_code,item_code)
-                        #生产领料
-                        # self.production_requisition.production_requisition_add(production_code)
                         #工序上线
                         self.process_online.process_online(production_code)
                         #工序报工,并获取工序号
