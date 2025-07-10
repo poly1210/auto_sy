@@ -73,6 +73,9 @@ class BuyInventory:
             new_item["warehouseId"] = warehouse_info["warehouseId"]
             new_item["warehouseNameZh"] = warehouse_info["warehouseName"]
             new_item["quantityRecived"] = item["itemNum"]
+            new_item["locationCode"] = None
+            new_item["locationName"] = None
+            new_item["locationId"] = None
             if new_item["batchManagement"] is True and not new_item.get("batchCode"):
                 new_item["batchCode"] = self.auto_batch_code()
             updated_data_list.append(new_item)
