@@ -63,6 +63,9 @@ class BuyArrival:
             item["warehouseCode"] = warehouse_info["warehouseCode"]
             item["warehouseId"] = warehouse_info["warehouseId"]
             item["warehouseNameZh"] = warehouse_info["warehouseName"]
+            item["locationCode"] = None
+            item["locationName"] = None
+            item["locationId"] = None
             # TODO: 这里如果是一个订单下，多个物料，不同仓库，就要变
             item["warehouseInfo"] = [warehouse_info["warehouseId"]]
             item["receivedQuantity"] = item["notReceivedGoods"]
@@ -96,7 +99,7 @@ class BuyArrival:
         print("新增到货单响应:", response)
 
         # 断言接口成功
-        assert response["code"] == 200, f"新增到货单失败，返回：{response}"
+        assert response["code"] == 200, f"新增采购到货单失败，返回：{response}"
 
         # 保存 businessId
         business_id = response["data"]["businessId"]
