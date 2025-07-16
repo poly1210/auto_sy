@@ -30,7 +30,7 @@ class ReadBuyXlsx:
 
     def buy_order_payload_list_get(self, code: str) -> dict:
         """根据产品编号获取采购单列表项内容"""
-        url = f"admin-api/mes/md/mditem/select/page?pageNum=1&pageSize=10&isEnable=true&itemCode={code}&isSales=true"
+        url = f"admin-api/mes/md/mditem/select/page?pageNum=1&pageSize=10&isEnable=true&itemCode={code}"
         res = self.api.send_get_direct(url)
         res["rows"][0]["itemSpec"] = res["rows"][0]["specification"]
         if res.get("code") == 200 and res["total"] > 0:
