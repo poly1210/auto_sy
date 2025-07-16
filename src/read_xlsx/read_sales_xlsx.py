@@ -102,6 +102,8 @@ class ReadSalesXlsx:
                         "taxRate": tax_rate,
                         "totalMoney":tax_price * item_num,
                         "goodsTime": pd.to_datetime(goods_time).strftime("%Y-%m-%d"),
+                        "unreceivedGoods": item_num,
+
                     }
 
                     payload["list"].append(item)
