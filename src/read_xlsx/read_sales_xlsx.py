@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from urllib.parse import quote
 from typing import List
 import pandas as pd
@@ -51,6 +51,10 @@ class ReadSalesXlsx:
 
         df = pd.read_excel(filepath)
         df.rename(columns=column_map, inplace=True)
+
+        # 确保 taxPrice 是字符串类型，防止浮点精度丢失
+        df["taxPrice"] = df["taxPrice"].apply(lambda x: str(x))
+
         # 排除掉没有填写必要信息的无效行
         df = df[df["salesCode"].notna() & df["clientName"].notna()]
         # 排除模板中的示例行或注释行
@@ -76,40 +80,36 @@ class ReadSalesXlsx:
                     "clientName": client_name,
                     "userName": user_name,
                     "salesData": pd.to_datetime(first["salesData"]).strftime("%Y-%m-%d"),
-                    # "goodsTime":pd.to_datetime(first["goodsTime"]).strftime("%Y-%m-%d"),
                     "userId": user_id,
                     "list": []
                 }
-                # _ 表示忽略索引列
+
                 for _, row in group.iterrows():
                     code = str(row["itemCode"])
                     item_num = row["itemNum"]
-                    tax_price = row["taxPrice"]
-                    tax_rate = row["taxRate"]
+                    tax_price = Decimal(str(row["taxPrice"]))
+                    tax_rate = Decimal(str(row["taxRate"]))
                     goods_time = row["goodsTime"]
 
                     item_info = self.sales_order_payload_list_get(code)
 
                     unit_money = tax_price / (1 + tax_rate / 100)
+                    unit_money = unit_money.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
 
                     item = {
                         **item_info,
-                        # "itemCode": code,
-                        # "itemId": item_info["itemId"],
-                        # "itemName": item_info["itemName"],
                         "itemNum": item_num,
-                        "unitMoney": unit_money,
-                        "taxRate": tax_rate,
-                        "totalMoney":tax_price * item_num,
+                        "unitMoney": float(unit_money),
+                        "taxRate": float(tax_rate.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)),
+                        "totalMoney": float((unit_money * item_num).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)),
                         "goodsTime": pd.to_datetime(goods_time).strftime("%Y-%m-%d"),
                         "unreceivedGoods": item_num,
-
+                        "taxMoney": float((tax_price * item_num).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)),
                     }
 
                     payload["list"].append(item)
 
                 payloads.append(payload)
-
 
             except Exception as e:
                 print(f"[!] 销售单号 {sales_code} 表格处理失败: {e}")

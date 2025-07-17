@@ -31,6 +31,8 @@ class ErpGUI(QWidget):
 
         # 新增：质检人姓名输入项
         self.inspector_input = self._create_input_row("质检人姓名：")
+        self.time_offset_input = self._create_input_row("MRP运算时间间隔（天数）：")
+
 
         self.sale_order_path_input = self._create_input_row("销售订单文件地址：", with_button=True)
         self.buy_order_path_input = self._create_input_row("采购订单文件地址：", with_button=True)
@@ -60,6 +62,7 @@ class ErpGUI(QWidget):
 
         # 插入新增的质检人输入项
         layout.addLayout(self.inspector_input['layout'])
+        layout.addLayout(self.time_offset_input['layout'])
 
         layout.addLayout(self.sale_order_path_input['layout'])
         layout.addLayout(self.buy_order_path_input['layout'])
@@ -104,6 +107,7 @@ class ErpGUI(QWidget):
         production_order = self.production_order_input["input"].text().strip()
         warehouse = self.warehouse_input["input"].text().strip()
         inspector = self.inspector_input["input"].text().strip()  # 新增字段
+        time_offset_str = self.time_offset_input["input"].text().strip()
         sale_order_path = self.sale_order_path_input["input"].text().strip()
         buy_order_path = self.buy_order_path_input["input"].text().strip()
 
@@ -111,14 +115,14 @@ class ErpGUI(QWidget):
 
         try:
             if selected_method == "方法一":
-                if not mrp_scheme_name or not mrp_scheme_id_str or not sale_order_path:
-                    self.result_box.append("方法一：MRP运算方案名称 / ID / 销售订单路径不能为空")
+                if not mrp_scheme_name or not mrp_scheme_id_str or not sale_order_path or not time_offset_str:
+                    self.result_box.append("方法一：MRP运算方案名称 / ID / 销售订单路径/MRP运算时间间隔不能为空")
                     return
                 if not mrp_scheme_id_str.isdigit():
                     self.result_box.append("运算方案ID必须为纯数字！")
                     return
                 mrp_scheme_id = int(mrp_scheme_id_str)
-                result = self.config.run_one(sale_order_path, mrp_scheme_id, mrp_scheme_name)
+                result = self.config.run_one(sale_order_path, mrp_scheme_id, mrp_scheme_name, time_offset_str)
 
             elif selected_method == "方法二":
                 if not buy_order_path or not warehouse or not inspector:

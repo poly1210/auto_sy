@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import TypedDict
 from baseApi.base_api import AllApi
 
@@ -26,7 +26,7 @@ class MRPCalculation:
         if response.get("code") == 200:
             data = response.get("data", {})
             if data.get("childrenSize", 0) > 0:
-                return data["children"][0]
+                return data["father"][0]["salesData"], data["children"]
             else:
                 raise ValueError(f"未找到销售订单编码为{sales_code} 的信息")
         else:
@@ -36,22 +36,30 @@ class MRPCalculation:
 
     #调用post方法进行请求
     #schemeId是运算方案，requirementsAnalysis是运算模式（就两个，（1.物料需求分析 2.批次需求计划））
-    def mrp_calculation(self,sales_code: str,  scheme_id: int, scheme_name: str):
+    def mrp_calculation(self, sales_code: str, scheme_id: int, scheme_name: str, time_offset_str: int):
 
         #这里是查询到的list
-        sales_item = self.mrp_list_info_get(sales_code)
+        sales_date, sales_item = self.mrp_list_info_get(sales_code)
         # 加上 operationQuantity 和 quantity 字段
-        executable_num = sales_item.get("executableNum", 0)
-        sales_item["operationQuantity"] = executable_num
-        sales_item["quantity"] = executable_num
+        for index, item in enumerate(sales_item, start=1):
+            item["index"] = index
+            executable_num = item.get("executableNum", 0)
+            item["operationQuantity"] = executable_num
+            item["quantity"] = executable_num
         #sales_item["index"] = 1
-        now = datetime.now()
-        formatted_date = now.strftime("%Y-%m-%d")
+
+        # 将字符串转换为 datetime 对象
+        time_offset = int(time_offset_str)
+        date_format = "%Y-%m-%d"  # 确保这个格式与原始日期字符串匹配
+        original_date = datetime.strptime(sales_date, date_format)
+        # 计算新的日期
+        new_date = original_date + timedelta(days=time_offset)
+        # 将新的日期格式化回字符串
+        adjusted_date_str = new_date.strftime(date_format)
         payload = {
             "calculationCode": self.auto_mrp_code(),
-            # 这里的单据日期直接选择和销售订单的销售日期相同
-            "calculationDate": formatted_date,
-            "list": [sales_item],
+            "calculationDate": adjusted_date_str,
+            "list": sales_item,
             # 这三个需要前端传入
             "requirementsAnalysis": 1,
             "schemeId": scheme_id,

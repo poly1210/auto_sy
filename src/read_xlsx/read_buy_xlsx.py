@@ -1,10 +1,12 @@
 import traceback
 from urllib.parse import quote
 from typing import List
+from decimal import Decimal, ROUND_HALF_UP
 import pandas as pd
 import json
 
 from baseApi.base_api import AllApi
+
 
 # 读取采购订单表格
 class ReadBuyXlsx:
@@ -32,14 +34,13 @@ class ReadBuyXlsx:
         """根据产品编号获取采购单列表项内容"""
         url = f"admin-api/mes/md/mditem/select/page?pageNum=1&pageSize=10&isEnable=true&itemCode={code}"
         res = self.api.send_get_direct(url)
-        res["rows"][0]["itemSpec"] = res["rows"][0]["specification"]
         if res.get("code") == 200 and res["total"] > 0:
-            return res["rows"][0]
+            row = res["rows"][0]
+            row["itemSpec"] = row["specification"]
+            return row
         raise ValueError(f"未找到采购产品编号：{code}")
 
     def read_buy_xlsx(self, filepath: str) -> List[dict]:
-        # 这里的单价是不含税的，和销售订单不一样
-        # 采购日期后端写的data你敢信？
         column_map = {
             "单据编号": "purchaseCode",
             "供应商": "vendorName",
@@ -54,6 +55,10 @@ class ReadBuyXlsx:
 
         df = pd.read_excel(filepath)
         df.rename(columns=column_map, inplace=True)
+
+        df["unitMoney"] = df["unitMoney"].apply(lambda x: str(x))
+        df["taxRate"] = df["taxRate"].apply(lambda x: str(x))
+
         # 排除掉没有填写必要信息的无效行
         df = df[df["purchaseCode"].notna() & df["vendorName"].notna()]
         # 排除模板中的示例行或注释行
@@ -69,6 +74,7 @@ class ReadBuyXlsx:
                 vendor_name = str(first["vendorName"])
                 user_name = str(first["userName"])
                 purchase_code = str(first["purchaseCode"])
+
                 # 执行查询方法，填入必传的id字段
                 vendor_info = self.vendor_id_get(vendor_name)
                 vendor_id = vendor_info["vendorId"]
@@ -76,49 +82,46 @@ class ReadBuyXlsx:
                 currency = vendor_info["currency"]
                 user_id = self.userid_get(user_name)
 
-
                 payload = {
                     "purchaseCode": purchase_code,
                     "vendorId": vendor_id,
                     "vendorName": vendor_name,
                     "vendorCode": vendor_code,
-                    "currency" : currency,
+                    "currency": currency,
                     "userName": user_name,
                     "purchaseData": pd.to_datetime(first["purchaseData"]).strftime("%Y-%m-%d"),
-                    # "deliveryDate":pd.to_datetime(first["deliveryDate"]).strftime("%Y-%m-%d"),
                     "userId": user_id,
                     "list": []
                 }
-                # _ 表示忽略索引列
+
                 for _, row in group.iterrows():
                     code = str(row["itemCode"])
-                    item_num = row["itemNum"]
-                    unit_money = row["unitMoney"]
-                    tax_rate = row["taxRate"]
+                    item_num = int(row["itemNum"])
+
+                    unit_money = Decimal(str(row["unitMoney"]))
+                    tax_rate = Decimal(str(row["taxRate"]))
                     goods_time = pd.to_datetime(row["deliveryDate"]).strftime("%Y-%m-%d")
 
                     item_info = self.buy_order_payload_list_get(code)
 
                     tax_price = unit_money * (1 + tax_rate / 100)
+                    tax_price = tax_price.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+                    total_money = unit_money * item_num
+                    total_money = total_money.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
 
                     item = {
                         **item_info,
-                        # "itemCode": code,
-                        # "itemId": item_info["itemId"],
-                        # "itemName": item_info["itemName"],
                         "itemNum": item_num,
-                        "unitMoney": unit_money,
-                        "taxRate": tax_rate,
-                        "taxMoney":tax_price * item_num,
-                        "totalMoney" : unit_money * item_num,
-                        "goodsTime" : goods_time,
+                        "unitMoney": float(unit_money.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)),
+                        "taxRate": float(tax_rate.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)),
+                        "taxMoney": float(tax_price),
+                        "totalMoney": float(total_money),
+                        "goodsTime": goods_time,
                     }
 
                     payload["list"].append(item)
 
                 payloads.append(payload)
-                print(payloads)
-
 
             except Exception as e:
                 print(f"[!] 采购单号 {purchase_code} 表格处理失败:")
@@ -130,5 +133,5 @@ class ReadBuyXlsx:
 
 if __name__ == "__main__":
     reader = ReadBuyXlsx()
-    result = reader.read_buy_xlsx("D:\桌面\采购订单.xlsx")
+    result = reader.read_buy_xlsx("D:\\桌面\\采购订单.xlsx")
     print(json.dumps(result, indent=2, ensure_ascii=False))

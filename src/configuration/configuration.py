@@ -72,8 +72,7 @@ class Configuration:
         self.production_submission = ProductionSubmission(api)
         self.production_inspection = ProductionInspection(api)
 
-
-    def run_one(self,sale_order_path,scheme_id,scheme_name):
+    def run_one(self, sale_order_path, scheme_id, scheme_name, time_offset_str):
         """从表格读取销售订单-新增-审批-mrp运算-生成生产计划和采购计划"""
         # 获取销售订单负载
         self.api.send_login("admin-api/config.yml")
@@ -87,7 +86,7 @@ class Configuration:
                 commit_payload_sale_order = self.sale_order.commit_task_by_business_id(business_id_sale_order)
                 self.sale_order.process_instance_cancel_flow(commit_payload_sale_order)
                 #mrp计算
-                key = self.mrp_cal.mrp_calculation(sales_code,scheme_id,scheme_name)
+                key = self.mrp_cal.mrp_calculation(sales_code, scheme_id, scheme_name, time_offset_str)
                 # 生成生产计划，采购计划
                 self.mrp_cal.production_and_buy_plan(key)
             return {"msg": "销售订单全流程执行成功"}
