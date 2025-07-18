@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
 
 from baseApi.base_api import AllApi
 from src.configuration.configuration import Configuration  # 配置逻辑类
+import user_context
 import json
 import requests
 
@@ -16,6 +17,9 @@ class ErpGUI(QWidget):
         super().__init__()
         self.setWindowTitle("ERP自动化工具")
         self.resize(600, 420)
+        self.api = AllApi()
+        self.config = Configuration(self.api)
+
 
         # 登录用户输入
         self.login_user_input = self._create_input_row("登录用户名（如 admin）：")
@@ -92,17 +96,16 @@ class ErpGUI(QWidget):
 
     def execute_selected_method(self):
         username = self.login_user_input["input"].text().strip()
+        user_context.user_key = username
         if not username:
             self.result_box.append("请先输入登录用户名（如 admin / user1）")
             return
 
         try:
             # 实例化 AllApi，传入用户名
-            api = AllApi(user_key=username)
 
             # 登录
-            api.send_login("admin-api/config.yml")
-            config = Configuration(api)
+            self.api.send_login("admin-api/config.yml")
         except Exception as e:
             self.result_box.append(f"登录失败：{str(e)}")
             return
@@ -127,19 +130,19 @@ class ErpGUI(QWidget):
                     self.result_box.append("运算方案ID必须为纯数字")
                     return
                 mrp_scheme_id = int(mrp_scheme_id_str)
-                result = config.run_one(sale_order_path, mrp_scheme_id, mrp_scheme_name, time_offset_str)
+                result = self.config.run_one(sale_order_path, mrp_scheme_id, mrp_scheme_name, time_offset_str)
 
             elif selected_method == "方法二":
                 if not buy_order_path or not warehouse or not inspector:
                     self.result_box.append("方法二：采购订单路径 / 仓库名 / 质检人不能为空")
                     return
-                result = config.run_two(buy_order_path, warehouse, inspector)
+                result = self.config.run_two(buy_order_path, warehouse, inspector)
 
             elif selected_method == "方法三":
                 if not production_order or not inspector:
                     self.result_box.append("方法三：生产工单号 / 质检人不能为空")
                     return
-                result = config.run_three(production_order, inspector)
+                result = self.config.run_three(production_order, inspector)
 
             else:
                 result = "未知方法"

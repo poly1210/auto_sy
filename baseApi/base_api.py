@@ -5,13 +5,13 @@ from common.read_yaml import write_token
 import common.file_path as FilePath
 import json
 import logging
+import user_context
 
 
-class AllApi(object, ):
-    def __init__(self, user_key):
+class AllApi(object):
+    def __init__(self):
         configPath = FilePath.get_config_path()
         tokenPath = FilePath.get_token_path()
-        self.user_key = user_key
         self.run = RunMethod()
         self.read_config = ReadYaml(configPath)
         self.read_token = ReadYaml(tokenPath)
@@ -30,10 +30,11 @@ class AllApi(object, ):
         try:
             url = self.read_config["pre-url"] + self.read_config[api_name]["url"]
             headers = self.read_config[api_name]["headers"]
-            user_info = self.read_config[api_name]["users"].get(self.user_key)
+            user_key = user_context.user_key
+            user_info = self.read_config[api_name]["users"].get(user_key)
 
             if not user_info:
-                raise ValueError(f"用户 {self.user_key} 未在配置文件中定义")
+                raise ValueError(f"用户 {user_key} 未在配置文件中定义")
 
             data = {
                 "username": user_info["username"],
@@ -52,7 +53,7 @@ class AllApi(object, ):
             raise e
 
     def create_by_get(self):
-        return self.read_config["admin-api/config.yml"]["users"][self.user_key]["username"]
+        return user_context.user_key
 
     # getData请求
     def send_getData(self,path, api_name):
