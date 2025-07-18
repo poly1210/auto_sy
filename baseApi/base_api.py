@@ -7,10 +7,11 @@ import json
 import logging
 
 
-class AllApi(object):
-    def __init__(self):
+class AllApi(object, ):
+    def __init__(self, user_key):
         configPath = FilePath.get_config_path()
         tokenPath = FilePath.get_token_path()
+        self.user_key = user_key
         self.run = RunMethod()
         self.read_config = ReadYaml(configPath)
         self.read_token = ReadYaml(tokenPath)
@@ -25,33 +26,33 @@ class AllApi(object):
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
-    def create_by_get(self):
-        """读config里面文件，获取创建人（登录人）名字"""
-        creator = self.read_config["admin-api/config.yml"]["data"]["username"]
-        return creator
-
-    # postJSON请求
     def send_login(self, api_name):
         try:
-            # 获取接口请求参数
             url = self.read_config["pre-url"] + self.read_config[api_name]["url"]
             headers = self.read_config[api_name]["headers"]
-            data = self.read_config[api_name]["data"]
-            print("\n")
-            print(f"请求URL:",url)
-            print("请求头:", headers)  # 发送前打印自定义头
-            print("请求体（表单）:", data)  # 发送前打印
+            user_info = self.read_config[api_name]["users"].get(self.user_key)
+
+            if not user_info:
+                raise ValueError(f"用户 {self.user_key} 未在配置文件中定义")
+
+            data = {
+                "username": user_info["username"],
+                "password": user_info["password"]
+            }
+
             response = self.run.runPostJson(url, headers, data)
             assert response["code"] == 200
-            # 把token值写到配置文件access_token.yml中，供其他接口调用
-            write_token(response)
-            self.read_token = ReadYaml(FilePath.get_token_path())  # 刷新token
 
-            print("响应：", json.dumps(response, indent=2, ensure_ascii=False, sort_keys=False))
+            write_token(response)
+            self.read_token = ReadYaml(FilePath.get_token_path())
+
             return response
         except Exception as e:
-            self.logger.info("接口访问出错啦~ %s" % e)
+            self.logger.info(f"接口访问出错啦~ {e}")
+            raise e
 
+    def create_by_get(self):
+        return self.read_config["admin-api/config.yml"]["users"][self.user_key]["username"]
 
     # getData请求
     def send_getData(self,path, api_name):

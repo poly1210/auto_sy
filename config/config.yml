@@ -1,15 +1,19 @@
+pre-url: http://192.168.3.128:1100/
 
-#todo 不同环境下这个前缀网址要修改
-pre-url : http://192.168.3.128:1100/
-
-#这里的admin-api/login被改成admin-api/config.yml
 admin-api/config.yml:
   method: json
   name: 登录
   url: admin-api/login
-  data: {
-    username: "admin",
-    password: "abc123456",
-  }
   headers:
     content-type: application/json;charset=UTF-8
+  #这里按照这个格式可以输入不同的用户，供选择
+  users:
+    admin:
+      username: "admin"
+      password: "abc123456"
+    user1:
+      username: "alice"
+      password: "alice_pwd"
+    user2:
+      username: "bob"
+      password: "bob_pwd"
