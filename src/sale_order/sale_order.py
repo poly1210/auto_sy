@@ -1,6 +1,7 @@
-from baseApi.base_api import AllApi
-import sys
+import datetime
 import os
+import sys
+from src.database_manipulate.database_manipulate import delay_time_sale_order
 
 # 获取项目根目录（假设 sale_order.py 路径是 D:\desktop\lyr\erp_auto\src\sale_order\sale_order.py，向上找两级到 erp_auto 目录）
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
@@ -11,7 +12,6 @@ from src.read_xlsx.read_sales_xlsx import ReadSalesXlsx
 
 #销售订单新增
 class SaleOrder:
-    business_id = None  # 类变量存储 businessId
 
     def __init__(self, api):
         self.api = api
@@ -36,6 +36,19 @@ class SaleOrder:
 
         # 保存 businessId
         business_id = response["data"]["businessId"]
+        insid, taskid = self.sale_order_get(business_id)
+        payload_commit = {
+            "taskid": taskid,
+            "insid": insid,
+            "businessId": business_id,
+            "comment": "",
+            "operateType": "0",
+            "billType": "sm_sales"
+        }
+
+        self.process_instance_cancel_flow(payload_commit)
+        delay_time_sale_order(taskid)
+
 
         return business_id
 
@@ -53,20 +66,6 @@ class SaleOrder:
 
         data = response["data"]
         return data["flowInsId"], data["taskId"]
-
-    def commit_task_by_business_id(self, business_id):
-        """封装好payload数据"""
-        insid, taskid = self.sale_order_get(business_id)
-        payload = {
-            "taskid": taskid,
-            "insid": insid,
-            "businessId": business_id,
-            "comment": "",
-            "operateType": "0",
-            "billType": "sm_sales"
-        }
-        print (payload)
-        return  payload
 
     def process_instance_cancel_flow(self,payload):
         """销售管理-销售订单明细--批量审批"""

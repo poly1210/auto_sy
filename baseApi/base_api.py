@@ -1,4 +1,5 @@
 import requests
+import pymysql
 from baseApi.run_method import RunMethod
 from common.read_yaml import ReadYaml
 from common.read_yaml import write_token
@@ -25,6 +26,19 @@ class AllApi(object):
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
+
+    # 数据库的配置
+    def get_conn(self):
+        db_cfg = self.read_config["admin-api/config.yml"]["mysql"]
+        conn = pymysql.connect(
+            host=db_cfg['host'],
+            port=db_cfg['port'],
+            user=db_cfg['username'],
+            password=db_cfg['password'],
+            database=db_cfg['database'],
+            charset='utf8mb4'
+        )
+        return conn
 
     def send_login(self, api_name):
         try:

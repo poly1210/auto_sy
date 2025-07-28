@@ -80,10 +80,7 @@ class Configuration:
             for data in payloads:
                 # 新增销售订单
                 sales_code = data["salesCode"]
-                business_id_sale_order = self.sale_order.sale_order_add(data)
-                # 审批
-                commit_payload_sale_order = self.sale_order.commit_task_by_business_id(business_id_sale_order)
-                self.sale_order.process_instance_cancel_flow(commit_payload_sale_order)
+                self.sale_order.sale_order_add(data)
                 #mrp计算
                 key = self.mrp_cal.mrp_calculation(sales_code, scheme_id, scheme_name, time_offset_str)
                 # 生成生产计划，采购计划

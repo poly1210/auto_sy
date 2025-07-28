@@ -1,4 +1,4 @@
-pre-url: http://192.168.3.128:1100/
+pre-url: http://192.168.3.89:20001/
 
 admin-api/config.yml:
   method: json
@@ -17,3 +17,9 @@ admin-api/config.yml:
     user2:
       username: "bob"
       password: "bob_pwd"
+  mysql:
+    host: 192.168.3.89
+    port: 3306
+    database: m1
+    username: root
+    password: abc123456
