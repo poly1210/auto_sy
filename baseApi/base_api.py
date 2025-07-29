@@ -29,16 +29,24 @@ class AllApi(object):
 
     # 数据库的配置
     def get_conn(self):
-        db_cfg = self.read_config["admin-api/config.yml"]["mysql"]
-        conn = pymysql.connect(
-            host=db_cfg['host'],
-            port=db_cfg['port'],
-            user=db_cfg['username'],
-            password=db_cfg['password'],
-            database=db_cfg['database'],
-            charset='utf8mb4'
-        )
-        return conn
+        try:
+            db_cfg = self.read_config["admin-api/config.yml"]["mysql"]
+            conn = pymysql.connect(
+                host=db_cfg['host'],
+                port=int(db_cfg['port']),  # 确保端口是整数类型
+                user=str(db_cfg['username']),  # 确保用户名是字符串类型
+                password=str(db_cfg['password']),  # 确保密码是字符串类型
+                database=str(db_cfg['database']),  # 确保数据库名是字符串类型
+                charset='utf8mb4'
+            )
+            return conn
+        except pymysql.err.OperationalError as e:
+            raise Exception(f"数据库连接失败，请检查配置: {e}")
+        except KeyError as e:
+            raise Exception(f"数据库配置缺失必要参数: {e}")
+        except Exception as e:
+            raise Exception(f"数据库连接出现未知错误: {e}")
+
 
     def send_login(self, api_name):
         try:
