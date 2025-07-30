@@ -56,3 +56,10 @@ class ProcessDispatch:
         print("新增工序派工响应:", response)
         assert response["code"] == 200, f"新增工序派工失败，返回：{response}"
 
+    def get_process_dispatch_code(self):
+        """获取工序派工单号"""
+        relative_url = "admin-api/mes/pro/dispatch/list?pageNum=1&pageSize=10"
+        response = self.api.send_get_direct(relative_url)
+        print("获取工序派工单号响应:", response)
+        assert response["code"] == 200, f"获取工序派工单号失败，返回：{response}"
+        return response["rows"][0]["dispatchCode"]

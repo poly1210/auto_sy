@@ -45,6 +45,10 @@ from src.production_inventory.production_inventory import ProductionInventory
 from src.production_submission.production_submission import ProductionSubmission
 # 导入生产检验
 from src.production_inspection.production_inspection import ProductionInspection
+# 导入时间全局跟踪器
+from src.time.time_utils import GlobalTimeTracker
+# 导入数据库操作类
+from src.database_manipulate.database_manipulate import DatabaseManipulate
 
 class Configuration:
     # 引入类实例
@@ -71,6 +75,7 @@ class Configuration:
         self.production_inventory = ProductionInventory(api)
         self.production_submission = ProductionSubmission(api)
         self.production_inspection = ProductionInspection(api)
+        self.database_manipulate = DatabaseManipulate()
 
     def run_one(self, sale_order_path, scheme_id, scheme_name, time_offset_str):
         """从表格读取销售订单-新增-审批-mrp运算-生成生产计划和采购计划"""
@@ -136,6 +141,9 @@ class Configuration:
     # worker是车间派工的工作人
     def run_three(self,production_code,user_name):
         """生产管理和生产管理——工序的全流程综合"""
+
+        # 创建全局时间跟踪器实例
+        global_time_tracker = GlobalTimeTracker()
         try:
             # 分成两块（报工和不报工的），先是有工序报工的
             if self.production_requisition.has_report(production_code):
@@ -154,10 +162,16 @@ class Configuration:
                 print("item_codes:", item_codes)  # 看看是不是 []
                 for item_code in item_codes:
                     while is_end_precess:
+                        # 延后审核时间
+                        delay_time = global_time_tracker.advance_time()
                         # 如果是车间派工的，就工序派工
                         if self.process_commission.has_process_dispatch() :
                             # 工序派工
                             self.process_dispatch.process_dispatch_add(production_code,item_code)
+                            # 修改工序派工数据库
+                            dispatch_code = self.process_dispatch.get_process_dispatch_code()
+                            self.database_manipulate.delay_time_process_dispatch(dispatch_code, delay_time)
+
                         #工序上线
                         self.process_online.process_online(production_code)
                         #工序报工,并获取工序号

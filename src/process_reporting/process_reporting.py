@@ -53,7 +53,7 @@ class ProcessReporting:
             item["eligibleQuantity"] = item["quantity"]
             item["feedbackQuantity"] = item["quantity"]
             # 创建人一定要写
-            # TODO 后面创建人根据登录人而变
+            # TODO 这里是工作人的id，这里写1，表示系统管理员（因为有工序流转，所以选择人也不合适，暂时先写死）
             item["staffIds"] = [1]
             payload.append(item)
         print(payload)

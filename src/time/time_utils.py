@@ -8,6 +8,34 @@ LUNCH_START = 12
 LUNCH_END = 13
 
 
+# 全局时间跟踪器
+class GlobalTimeTracker:
+    def __init__(self):
+        self.current_time = datetime.now()
+
+    def advance_time(self, min_hours: float = 0.5, max_hours: float = 2.0) -> datetime:
+        """推进时间并返回新的时间"""
+        if self.current_time is None:
+            self.current_time = datetime.now()
+
+        # 添加随机延迟
+        delay_hours = random.uniform(min_hours, max_hours)
+        self.current_time = self.current_time + timedelta(hours=delay_hours)
+
+        # 确保在工作时间内
+        if not is_work_time(self.current_time):
+            self.current_time = next_valid_work_time(self.current_time)
+
+        # 为秒添加随机值
+        random_seconds = random.randint(0, 59)
+        self.current_time = self.current_time.replace(
+            second=random_seconds,
+        )
+
+        return self.current_time
+
+
+
 def is_work_time(dt: datetime):
     if dt.weekday() >= 5:
         return False
