@@ -1,4 +1,6 @@
 import json
+import random
+
 
 #工单投产
 class ProcessCommission:
@@ -56,6 +58,23 @@ class ProcessCommission:
         assert response["code"] == 200, f"新增工单投产失败，返回：{response}"
 
         return item_codes
+
+    # 生产工单创建日期获取
+    def work_order_date_get(self, production_code):
+        relative_url = f"admin-api/mes/pro/workorderV1/list?pageNum=1&pageSize=10&workorderCode={production_code}"
+        response = self.api.send_get_direct(relative_url)
+        work_order_date = response["rows"][0]["requestDate"]
+        random_hour = random.randint(9, 12)
+        random_minute = random.randint(0, 59)
+        random_second = random.randint(0, 59)
+
+        work_order_datetime = work_order_date.replace(
+            hour=random_hour,
+            minute=random_minute,
+            second=random_second
+        )
+        return work_order_date
+
 
 # if __name__ == "__main__":
 #     pcm = ProcessCommission()

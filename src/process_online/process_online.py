@@ -35,9 +35,3 @@ class ProcessOnline:
         # 断言接口成功
         assert response["code"] == 200, f"工序上线失败，返回：{response}"
         return response["code"]
-
-
-
-
-
-

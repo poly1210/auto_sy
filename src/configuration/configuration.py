@@ -3,6 +3,8 @@ import os
 import time
 import traceback
 
+from anyio import current_time
+
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.append(project_root)
 from baseApi.base_api import AllApi
@@ -160,17 +162,22 @@ class Configuration:
                     print("未找到任何 item_code，流程结束")
                     return
                 print("item_codes:", item_codes)  # 看看是不是 []
+                global_time_tracker.current_time = self.process_commission.work_order_date_get(production_code)
                 for item_code in item_codes:
                     while is_end_precess:
                         # 延后审核时间
-                        delay_time = global_time_tracker.advance_time()
+                        delay_time_one = global_time_tracker.advance_time()
                         # 如果是车间派工的，就工序派工
                         if self.process_commission.has_process_dispatch() :
                             # 工序派工
                             self.process_dispatch.process_dispatch_add(production_code,item_code)
-                            # 修改工序派工数据库
+                            # 获取派工编号
                             dispatch_code = self.process_dispatch.get_process_dispatch_code()
-                            self.database_manipulate.delay_time_process_dispatch(dispatch_code, delay_time)
+                            # 修改工序派工数据库，修改创建时间
+                            self.database_manipulate.delay_time_process_dispatch_create(dispatch_code, delay_time_one)
+                            # 修改审核时间
+                            delay_time_two = global_time_tracker.advance_time()
+                            self.database_manipulate.delay_time_process_dispatch_update(dispatch_code, delay_time_two)
 
                         #工序上线
                         self.process_online.process_online(production_code)

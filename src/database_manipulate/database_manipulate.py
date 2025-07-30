@@ -25,9 +25,9 @@ class DatabaseManipulate:
         print(f"[{task_id}] 审批时间更新为：{time_str}")
         conn.close()  # 关闭数据库连接
 
-    def delay_time_process_dispatch(self, process_code, global_time):
+    def delay_time_process_dispatch_create(self, process_code, global_time):
         """
-        更新工序相关的时间，包括工序报工
+        更新工序报工相关的时间
         :param process_code: 工序派工单据编号
         :param global_time:
         """
@@ -42,13 +42,69 @@ class DatabaseManipulate:
                 # 更新工序派工时间
                 reporting_sql = """
                                 UPDATE pro_workorder_dispatch
-                                SET create_time = %s SET update_time = %s
+                                SET create_time = %s
                                 WHERE dispatch_code = process_code \
                                 """
                 current_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
                 cursor.execute(reporting_sql, (current_time, current_time))
 
                 conn.commit()
-                print(f"[{process_code}] 工序报工时间更新为：{current_time}")
+                print(f"[{process_code}] 工序报工创建时间更新为：{current_time}")
+        finally:
+            conn.close()
+
+    def delay_time_process_dispatch_update(self, process_code, global_time):
+        """
+        更新工序报工相关的时间
+        :param process_code: 工序派工单据编号
+        :param global_time:
+        """
+        conn = AllApi().get_conn()
+        current_time = global_time
+
+        if not is_work_time(current_time):
+            current_time = next_valid_work_time(current_time)
+
+        try:
+            with conn.cursor() as cursor:
+                # 更新工序派工时间
+                reporting_sql = """
+                                UPDATE pro_workorder_dispatch
+                                SET update_time = %s
+                                WHERE dispatch_code = process_code \
+                                """
+                current_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+                cursor.execute(reporting_sql, (current_time, current_time))
+
+                conn.commit()
+                print(f"[{process_code}] 工序报工审核时间更新为：{current_time}")
+        finally:
+            conn.close()
+
+    def change_porcess_online_time(self, process_id, global_time):
+        """
+                更新工序上线的时间
+                :param process_code: 工序派工单据编号
+                :param global_time:
+                """
+        conn = AllApi().get_conn()
+        current_time = global_time
+
+        if not is_work_time(current_time):
+            current_time = next_valid_work_time(current_time)
+
+        try:
+            with conn.cursor() as cursor:
+                # 更新工序派工时间
+                reporting_sql = """
+                                UPDATE pro_workorder_info
+                                SET request_date = %s
+                                WHERE id = process_id
+                                """
+                current_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+                cursor.execute(reporting_sql, (current_time, current_time))
+
+                conn.commit()
+                print(f"[{process_code}] 工序报工审核时间更新为：{current_time}")
         finally:
             conn.close()

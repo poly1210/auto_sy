@@ -1,5 +1,7 @@
 import sys
 import os
+import time
+
 from PySide6.QtWidgets import (
     QApplication, QWidget, QPushButton, QLabel, QLineEdit, QTextEdit,
     QVBoxLayout, QHBoxLayout, QComboBox, QFileDialog
@@ -103,9 +105,10 @@ class ErpGUI(QWidget):
 
         try:
             # 实例化 AllApi，传入用户名
-
             # 登录
             self.api.send_login("admin-api/config.yml")
+            # 增加短暂延迟确保登录完成
+            time.sleep(1)
         except Exception as e:
             self.result_box.append(f"登录失败：{str(e)}")
             return

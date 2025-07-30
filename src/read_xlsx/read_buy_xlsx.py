@@ -96,7 +96,7 @@ class ReadBuyXlsx:
 
                 for _, row in group.iterrows():
                     code = str(row["itemCode"])
-                    item_num = int(row["itemNum"])
+                    item_num = row["itemNum"]
 
                     unit_money = Decimal(str(row["unitMoney"]))
                     tax_rate = Decimal(str(row["taxRate"]))

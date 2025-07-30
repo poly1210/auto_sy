@@ -13,10 +13,8 @@ class GlobalTimeTracker:
     def __init__(self):
         self.current_time = datetime.now()
 
-    def advance_time(self, min_hours: float = 0.5, max_hours: float = 2.0) -> datetime:
+    def advance_time(self, min_hours: float = 0.5, max_hours: float = 4.0) -> datetime:
         """推进时间并返回新的时间"""
-        if self.current_time is None:
-            self.current_time = datetime.now()
 
         # 添加随机延迟
         delay_hours = random.uniform(min_hours, max_hours)
