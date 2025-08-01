@@ -60,9 +60,10 @@ class ProcessInspection:
             new_item["unqualifiedQuantity"] = 0
             updated_data_list.append(new_item)
 
+        inspection_code = self.auto_process_inspection_code()
         payload = {
             "list": updated_data_list,
-            "inspectionCode": self.auto_process_inspection_code(),
+            "inspectionCode": inspection_code,
             **main_data,
             "inspectionDate": formatted_time,
             "qcUserName": user_name,
@@ -111,6 +112,7 @@ class ProcessInspection:
             "billType": "qc_process_inspection",
         }
         self.process_instance_cancel_flow(payload_commit)
+        return inspection_code
 
 
 

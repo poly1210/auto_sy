@@ -98,10 +98,11 @@ class ErpGUI(QWidget):
 
     def execute_selected_method(self):
         username = self.login_user_input["input"].text().strip()
-        user_context.user_key = username
         if not username:
-            self.result_box.append("请先输入登录用户名（如 admin / user1）")
+            self.result_box.append("请先输入登录用户键名（如配置文件中的user1等）")
             return
+        user_context.user_key = username
+
 
         try:
             # 实例化 AllApi，传入用户名
@@ -153,6 +154,13 @@ class ErpGUI(QWidget):
             self.result_box.append(f"执行结果：{result}")
         except Exception as e:
             self.result_box.append(f"执行异常：{str(e)}")
+
+        self.result_box.append("-" * 50)
+        self.result_box.append(f"执行结束 {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        self.result_box.append("-" * 50)
+
+        # 自动滚动到最新内容
+        self.result_box.verticalScrollBar().setValue(self.result_box.verticalScrollBar().maximum())
 
 
 if __name__ == "__main__":

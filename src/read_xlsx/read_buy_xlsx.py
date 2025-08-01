@@ -96,7 +96,7 @@ class ReadBuyXlsx:
 
                 for _, row in group.iterrows():
                     code = str(row["itemCode"])
-                    item_num = row["itemNum"]
+                    item_num = Decimal(str(row["itemNum"]))
 
                     unit_money = Decimal(str(row["unitMoney"]))
                     tax_rate = Decimal(str(row["taxRate"]))
@@ -111,7 +111,7 @@ class ReadBuyXlsx:
 
                     item = {
                         **item_info,
-                        "itemNum": item_num,
+                        "itemNum": float(item_num),
                         "unitMoney": float(unit_money.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)),
                         "taxRate": float(tax_rate.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)),
                         "taxMoney": float(tax_price),

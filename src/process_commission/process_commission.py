@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import random
 
@@ -68,12 +69,17 @@ class ProcessCommission:
         random_minute = random.randint(0, 59)
         random_second = random.randint(0, 59)
 
+        # 确保work_order_date是datetime对象
+        if isinstance(work_order_date, str):
+            # 根据常见的日期格式进行解析
+            work_order_date = datetime.strptime(work_order_date, "%Y-%m-%d")
+
         work_order_datetime = work_order_date.replace(
             hour=random_hour,
             minute=random_minute,
             second=random_second
         )
-        return work_order_date
+        return work_order_datetime
 
 
 # if __name__ == "__main__":

@@ -86,7 +86,7 @@ class ReadSalesXlsx:
 
                 for _, row in group.iterrows():
                     code = str(row["itemCode"])
-                    item_num = row["itemNum"]
+                    item_num = Decimal(str(row["itemNum"]))
                     tax_price = Decimal(str(row["taxPrice"]))
                     tax_rate = Decimal(str(row["taxRate"]))
                     goods_time = row["goodsTime"]
@@ -98,12 +98,12 @@ class ReadSalesXlsx:
 
                     item = {
                         **item_info,
-                        "itemNum": item_num,
+                        "itemNum": float(item_num),
                         "unitMoney": float(unit_money),
                         "taxRate": float(tax_rate.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)),
                         "totalMoney": float((unit_money * item_num).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)),
                         "goodsTime": pd.to_datetime(goods_time).strftime("%Y-%m-%d"),
-                        "unreceivedGoods": item_num,
+                        "unreceivedGoods": float(item_num),
                         "taxMoney": float((tax_price * item_num).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)),
                     }
 

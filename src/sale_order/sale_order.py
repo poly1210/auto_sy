@@ -1,7 +1,7 @@
 import datetime
 import os
 import sys
-from src.database_manipulate.database_manipulate import delay_time_sale_order
+from src.database_manipulate.database_manipulate import DatabaseManipulate
 
 # 获取项目根目录（假设 sale_order.py 路径是 D:\desktop\lyr\erp_auto\src\sale_order\sale_order.py，向上找两级到 erp_auto 目录）
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
@@ -47,7 +47,8 @@ class SaleOrder:
         }
 
         self.process_instance_cancel_flow(payload_commit)
-        delay_time_sale_order(taskid)
+        dm = DatabaseManipulate()
+        dm.delay_time_sale_order(taskid)
 
 
         return business_id

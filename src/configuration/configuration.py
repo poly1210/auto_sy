@@ -177,15 +177,25 @@ class Configuration:
                             self.database_manipulate.delay_time_process_dispatch_create(dispatch_code, delay_time_one)
                             # 修改审核时间
                             delay_time_two = global_time_tracker.advance_time()
+                            global_time_tracker.current_time = delay_time_two
                             self.database_manipulate.delay_time_process_dispatch_update(dispatch_code, delay_time_two)
 
                         #工序上线
-                        self.process_online.process_online(production_code)
+                        payload_id = self.process_online.process_online(production_code)
+                        # 工序上线单据日期修改
+                        self.database_manipulate.change_porcess_online_time(payload_id,
+                                                                            global_time_tracker.current_time)
                         #工序报工,并获取工序号
                         process_code =self.process_reporting.process_reporting_add(production_code)
+                        # 修改工序报工时间
+                        self.database_manipulate.change_porcess_reporting_time(production_code,
+                                                                               global_time_tracker.current_time)
                         #看是否需要检验,写不免检的流程
                         if not self.process_reporting.has_process_inspection(process_code):
-                            self.process_inspection.process_inspection_add(production_code,user_name)
+                            inspection_code = self.process_inspection.process_inspection_add(production_code, user_name)
+                            # 修改工序检验单时间
+                            self.database_manipulate.change_porcess_inspection_time(inspection_code,
+                                                                                    global_time_tracker.current_time)
                         #判断是否末工序，就看工单投产搜单号能不能返回结果
                         if not self.process_commission.is_last_process(production_code,item_code):
                             is_end_precess = False

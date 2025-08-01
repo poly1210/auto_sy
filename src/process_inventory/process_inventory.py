@@ -64,12 +64,4 @@ class ProcessInventory:
 
 
 
-# 使用示例
-if __name__ == "__main__":
-    # 创建 SaleOrder 实例
-    pi = ProcessInventory()
 
-    # 调用 系列 方法
-    work_order_code = "MO202503210019"
-    result = pi.process_inventory_add(work_order_code)
-    print(result)

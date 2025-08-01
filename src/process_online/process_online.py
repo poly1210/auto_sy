@@ -11,7 +11,7 @@ class ProcessOnline:
         # purchaseTemplateId = self.buy_order_payload_get()
         relative_url = f"admin-api/pro/online/list?pageNum=1&pageSize=10&workorderCode={code}"
         response = self.api.send_get_direct(relative_url)
-        data = response["rows"]
+        data = response["rows"][0]
         return data
 
 
@@ -19,12 +19,13 @@ class ProcessOnline:
         """工序上线"""
         relative_url = "admin-api/pro/online/batch"
         payload = []
-        for item in self.process_online_payload_get(production_code):
-            payload_id,online_quantity = item["id"], item["quantity"]
-            payload.append({
-                "id":payload_id,
-                "onlineQuantity" : online_quantity ,
-            })
+        # 这里有修改，从遍历变成单次获取，目前来看没有问题
+        item = self.process_online_payload_get(production_code)
+        payload_id, online_quantity = item["id"], item["quantity"]
+        payload.append({
+            "id": payload_id,
+            "onlineQuantity": online_quantity,
+        })
         print(payload)
         # 发送 POST 请求（JSON 格式）
         response = self.api.send_post_direct(relative_url, payload)
@@ -34,4 +35,4 @@ class ProcessOnline:
 
         # 断言接口成功
         assert response["code"] == 200, f"工序上线失败，返回：{response}"
-        return response["code"]
+        return payload_id

@@ -8,13 +8,13 @@ admin-api/config.yml:
     content-type: application/json;charset=UTF-8
   #这里按照这个格式可以输入不同的用户，供选择
   users:
-    admin:
+    user1:
       username: "admin"
       password: "abc123456"
-    user1:
-      username: "alice"
-      password: "alice_pwd"
     user2:
+      username: "zxx"
+      password: "123456"
+    user3:
       username: "bob"
       password: "bob_pwd"
   mysql:
