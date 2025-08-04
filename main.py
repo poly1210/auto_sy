@@ -24,7 +24,7 @@ class ErpGUI(QWidget):
 
 
         # 登录用户输入
-        self.login_user_input = self._create_input_row("登录用户名（如 admin）：")
+        self.login_user_input = self._create_input_row("登录用户名（如 user1）：")
 
         # 输入组件
         self.mrp_scheme_name_input = self._create_input_row("MRP运算方案名称：")
