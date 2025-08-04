@@ -56,10 +56,10 @@ class Configuration:
     # 引入类实例
     def __init__(self,api):
         self.api = api
-        self.reader_sales = ReadSalesXlsx()
+        self.reader_sales = ReadSalesXlsx(api)
         self.sale_order = SaleOrder(api)
         self.mrp_cal = MRPCalculation(api)
-        self.reader_buy = ReadBuyXlsx()
+        self.reader_buy = ReadBuyXlsx(api)
         self.buy_order_new = BuyOrderNew(api)
         self.buy_arrival = BuyArrival(api)
         self.buy_inspection = BuyInspection(api)

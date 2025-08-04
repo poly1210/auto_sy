@@ -11,8 +11,8 @@ from baseApi.base_api import AllApi
 # 读取采购订单表格
 class ReadBuyXlsx:
 
-    def __init__(self):
-        self.api = AllApi()
+    def __init__(self, api):
+        self.api = api
 
     def vendor_id_get(self, vendor_name):
         encoded = quote(vendor_name)

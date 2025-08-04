@@ -9,8 +9,8 @@ from baseApi.base_api import AllApi
 
 class ReadSalesXlsx:
 
-    def __init__(self):
-        self.api = AllApi()
+    def __init__(self, api):
+        self.api = api
 
     def client_id_get(self, client_name):
         encoded = quote(client_name)
